@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/quikdb_backend"
+]
+resolver = "2"
