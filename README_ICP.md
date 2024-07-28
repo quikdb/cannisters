@@ -32,6 +32,7 @@ dfx canister create icp
 dfx canister create internet_identity
 
 # Deploys your canisters to the replica and generates your candid interface
+dfx build
 dfx deploy
 ```
 
