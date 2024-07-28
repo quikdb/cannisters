@@ -9,18 +9,19 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ESNext"
+      "esnext"
     ],
-    "module": "ESNext",
+    "module": "es2020",
     "moduleResolution": "Node",
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ESNext",
+    "target": "esnext",
     "types": [
       "vite/client",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom",
+      "node",
     ],
     "useDefineForClassFields": true
   },

@@ -1,18 +1,18 @@
 {
   "canisters": {
-    "app_backend": {
-      "main": "src/app_backend/main.mo",
+    "icp": {
+      "main": "src/icp/main.mo",
       "type": "motoko"
     },
-    "app_frontend": {
+    "web": {
       "dependencies": [
-        "app_backend"
+        "icp"
       ],
       "source": [
-        "src/app_frontend/dist"
+        "src/web/dist"
       ],
       "type": "assets",
-      "workspace": "app_frontend"
+      "workspace": "web"
     },
     "internet_identity": {
       "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
