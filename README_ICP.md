@@ -25,7 +25,7 @@ If you want to test your project locally, you can use the following commands:
 
 ```bash
 # Starts the replica, running in the background
-dfx start --clean
+dfx start --clean --background
 
 dfx canister create web
 dfx canister create icp

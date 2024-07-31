@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { AuthRoutes } from './routes';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthRoutes, DashboardRoutes } from './routes';
 import { icp } from '../../declarations/icp';
 
 const App: React.FC = () => {
@@ -14,11 +14,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <main>
+    <Router>
       <Routes>
-        {AuthRoutes}
+        <Route path='/*' element={<AuthRoutes />} />
+        <Route path='/dashboard/*' element={<DashboardRoutes />} />
       </Routes>
-    </main>
+    </Router>
   );
 };
 
