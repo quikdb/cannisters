@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Home from '../pages/Home';
+import Home from '../pages/dashboard/Home';
 
 export const DashboardRoutes: React.FC = () => {
   return (

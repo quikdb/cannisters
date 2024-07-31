@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Login from '../pages/Login';
+import Login from '../pages/auth/Login';
 
 export const AuthRoutes: React.FC = () => {
   return (
