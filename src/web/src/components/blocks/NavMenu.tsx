@@ -1,17 +1,10 @@
 'use client';
 
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-
-import { cn } from '@/lib/utils';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
+  NavigationMenuTrigger
 } from '@/components/ui/navigation-menu';
 
 export function NavMenu() {
