@@ -19,7 +19,7 @@ export function NavMenu() {
     <NavigationMenu className='h-screen'>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger ref='#'>Getting started</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
