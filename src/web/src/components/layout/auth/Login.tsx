@@ -1,55 +1,77 @@
 import { Link } from 'react-router-dom';
-
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Avatar from '../../../../public/images/Ellipse.png';
 
 export function Login() {
   return (
-    <div className='w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]'>
-      <div className='flex items-center justify-center py-12'>
-        <div className='mx-auto grid w-[350px] gap-6'>
-          <div className='grid gap-2 text-center'>
-            <h1 className='text-3xl font-bold'>Login</h1>
-            <p className='text-balance text-muted-foreground'>Enter your email below to login to your account</p>
-          </div>
-          <div className='grid gap-4'>
-            <div className='grid gap-2'>
-              <Label htmlFor='email'>Email</Label>
-              <Input id='email' type='email' placeholder='m@example.com' required />
-            </div>
-            <div className='grid gap-2'>
-              <div className='flex items-center'>
-                <Label htmlFor='password'>Password</Label>
-                <Link to='#' className='ml-auto inline-block text-sm underline'>
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id='password' type='password' required />
-            </div>
-            <Button type='submit' className='w-full'>
-              Login
-            </Button>
-            <Button variant='outline' className='w-full'>
-              Login with Google
-            </Button>
-          </div>
-          <div className='mt-4 text-center text-sm'>
-            Don&apos;t have an account?{' '}
-            <Link to='#' className='underline'>
-              Sign up
-            </Link>
+    <div className='w-full h-screen lg:grid lg:grid-cols-2'>
+      <div className='hidden bg-muted lg:flex lg:justify-center lg:items-center bg-[#002884] mt-4 ml-4 mb-4 relative'>
+        <div className='absolute top-0 left-0 p-8'>
+          <span className='text-white text-xl font-bold font-orelega'>quickDB</span>
+        </div>
+        <div className='flex flex-col justify-center items-center'>
+          <div className='text-center text-white text-xl font-normal font-nunito'>@quickDB is the fastest and best db out there</div>
+          <div className='flex gap-2 mt-2'>
+            {/* <Image src='/images/Ellipse.png' alt='avatar' /> */}
+            <p className='text-white text-xl font-normal font-nunito'>@nobeijoan</p>
           </div>
         </div>
       </div>
-      <div className='hidden bg-muted lg:block'>
-        <img
-          src='/placeholder.svg'
-          alt='Image'
-          width='1920'
-          height='1080'
-          className='h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
-        />
+
+      <div className='flex items-center justify-center py-12'>
+        <div className='mx-auto grid w-[350px] gap-6'>
+          <div className='grid gap-2 text-center'>
+            <h1 className='text-2xl text-black font-semibold font-nunito'>Welcome Back</h1>
+            <p className='text-base text-black font-normal font-nunito'>Enter your email to sign in for this app</p>
+          </div>
+          <div className='grid gap-4'>
+            <div className='grid gap-2'>
+              <Input id='email' type='email' placeholder='email@domain.com' required />
+            </div>
+            <div className='grid gap-2'>
+              <Input id='password' type='password' placeholder='Enter password' required />
+              <Link to='#' className='ml-auto inline-block text-xs font-normal font-nunito text-[#00acc1]'>
+                Forgot your password?
+              </Link>
+            </div>
+            <Button type='submit' className='w-full bg-customBlue text-white text-base font-medium font-nunito'>
+              Sign in with email
+            </Button>
+            <div className='h-6 justify-center items-center gap-2 inline-flex'>
+              <div className='grow shrink basis-0 h-px bg-[#e6e6e6]'></div>
+              <div className='text-center text-customGrey text-base font-normal font-nunito leading-normal'>or </div>
+              <div className='grow shrink basis-0 h-px bg-[#e6e6e6]'></div>
+            </div>
+            <div className='flex justify-between gap-x-4'>
+              <Button variant='outline' className='w-full bg-[#eeeeee] font-nunito text-base font-medium text-black'>
+                Google
+              </Button>
+              <Button variant='outline' className='w-full bg-[#eeeeee] font-nunito text-base font-medium text-black'>
+                Apple
+              </Button>
+              <Button variant='outline' className='w-full bg-[#eeeeee] font-nunito text-base font-medium text-black'>
+                Github
+              </Button>
+            </div>
+            <Button variant='outline' className='w-full bg-[#eeeeee] font-nunito text-base font-medium text-black'>
+              See other options
+            </Button>
+          </div>
+          <div className='text-center'>
+            <span className='text-customGrey text-sm font-normal font-nunito '>By clicking continue, you agree to our </span>
+            <span className='text-black text-sm font-normal font-nunito '>Terms of Service</span>
+            <span className='text-customGrey text-sm font-normal font-nunito '> and </span>
+            <span className='text-black text-sm font-normal font-nunito '>Privacy Policy</span>
+          </div>
+          <div className='text-center'>
+            <span className="text-[#828282] text-sm font-normal font-['Nunito'] leading-[21px]">Don’t have an account?</span>
+            <span className="text-[#00acc1] text-sm font-normal font-['Nunito'] leading-[21px]"> </span>
+            <span className="text-[#00acc1] text-sm font-bold font-['Nunito'] leading-[21px]">Create Account</span>
+          </div>
+        </div>
       </div>
     </div>
   );
