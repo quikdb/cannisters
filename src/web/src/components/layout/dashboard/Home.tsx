@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import { Home as HomeIcon, LineChart, Menu, Package, Package2, ShoppingCart, Users } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 import { NavBar, Project } from '@/components/blocks';
+
 //////// for the paid feature tag do not remove the card component below ///////
+import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +61,7 @@ export function Home() {
               </Link>
             </nav>
           </div>
-          {/* Paid Feature Tag */}
+          {/* Paid Feature Tag Desktop */}
           {/* <div className='mt-auto p-4'>
             <Card x-chunk='dashboard-02-chunk-0'>
               <CardHeader className='p-2 pt-0 md:p-4'>

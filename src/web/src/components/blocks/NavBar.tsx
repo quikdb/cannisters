@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 
 import {
   Bell,
-  CircleUser,
   Home as HomeIcon,
   LineChart,
   Menu,
@@ -14,20 +13,17 @@ import {
   Settings,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 import { NavMenu } from '@/components/blocks';
+
+//////// for the paid feature tag do not remove the card component below ///////
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+////////////////////////////////////////////////////////////////////////////////
+
+import { AvatarComponent } from '@/components/ui/components';
 
 export function NavBar() {
   return (
@@ -83,7 +79,8 @@ export function NavBar() {
                 Settings
               </Link>
             </nav>
-            {/* <div className='mt-auto'>
+            {/* Paid Feature Tag Mobile */}
+            <div className='mt-auto'>
                 <Card>
                   <CardHeader>
                     <CardTitle>Upgrade to Pro</CardTitle>
@@ -95,7 +92,7 @@ export function NavBar() {
                     </Button>
                   </CardContent>
                 </Card>
-              </div> */}
+              </div>
           </SheetContent>
         </Sheet>
         <div className='w-full flex-1'>
@@ -114,22 +111,7 @@ export function NavBar() {
           <Bell className='h-4 w-4' />
           <span className='sr-only'>Toggle notifications</span>
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='secondary' size='icon' className='rounded-full'>
-              <CircleUser className='h-5 w-5' />
-              <span className='sr-only'>Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        < AvatarComponent />
       </header>
     </>
   );
