@@ -8,8 +8,8 @@ import Avatar from '../../../../public/images/Ellipse.png';
 export function Signup() {
   return (
     <div className='w-full h-screen lg:grid lg:grid-cols-2'>
-      <div className='hidden bg-muted lg:flex lg:justify-center lg:items-center bg-[#002884] mt-4 ml-4 mb-4 relative'>
-        <div className='absolute top-0 left-0 p-8'>
+      <div className='hidden lg:flex lg:justify-center lg:items-center bg-customBlue mt-4 ml-4 mb-4 relative'>
+      <div className='absolute top-0 left-0 p-8'>
           <span className='text-white text-2xl font-bold font-orelega'>quickDB</span>
         </div>
         <div className='flex flex-col justify-center items-center'>
