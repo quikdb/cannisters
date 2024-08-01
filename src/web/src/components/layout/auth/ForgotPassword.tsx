@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import Avatar from '../../../../public/images/Ellipse.png';
 import { AuthImage } from '@/components/blocks';
 
-export function SignupOTP() {
+export function ForgotPassword() {
   return (
     <div className='w-full h-screen lg:grid lg:grid-cols-2'>
       <AuthImage />
@@ -14,11 +14,10 @@ export function SignupOTP() {
       <div className='flex items-center py-8'>
         <div className='mx-auto grid w-[350px] gap-6'>
           <div className='grid gap-2 text-center'>
-            <h1 className='text-2xl text-black font-semibold font-nunito'>Create an account</h1>
-            <div className='text-center'>
-              <span className='text-black text-sm font-normal font-nunito'>One-time login code sent to </span>
-              <span className='text-black text-sm font-bold font-nunito'>nobeijoan1@gmail.com.</span>
-            </div>{' '}
+            <h1 className='text-2xl text-black font-semibold font-nunito'>Forgot password</h1>
+            <div className="text-center text-black text-base font-normal font-['Nunito'] leading-normal">
+              Please enter the email assigned to your account for password recovery.
+            </div>
           </div>
           <div className='grid gap-4'>
             <div className='grid gap-2'>
@@ -27,12 +26,6 @@ export function SignupOTP() {
             <Button type='submit' className='w-full bg-customBlue text-white text-base font-medium font-nunito'>
               Continue
             </Button>
-          </div>
-          <div className='text-center'>
-            <span className='text-customGrey text-sm font-normal font-nunito '>By clicking continue, you agree to our </span>
-            <span className='text-black text-sm font-normal font-nunito '>Terms of Service</span>
-            <span className='text-customGrey text-sm font-normal font-nunito '> and </span>
-            <span className='text-black text-sm font-normal font-nunito '>Privacy Policy</span>
           </div>
         </div>
       </div>
