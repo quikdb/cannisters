@@ -6,10 +6,13 @@ export function AuthImage() {
       </div>
       <div className='flex flex-col justify-center items-center'>
         <div className='text-center text-white text-xl font-normal font-nunito'>@quickDB is the fastest and best db out there</div>
-        <div className='flex gap-2 mt-2'>
-          {/* <Image src='/images/Ellipse.png' alt='avatar' /> */}
+        <div className='flex gap-2 mt-2 items-center'>
+          <img src='/images/ellipse.png' alt='avatar' className='w-8 h-8 rounded-full' />
           <p className='text-white text-xl font-normal font-nunito'>@nobeijoan</p>
         </div>
+      </div>
+      <div className='absolute bottom-0 left-0 p-8'>
+        <img src='/path/to/db-icon.svg' alt='database icon' className='w-20 h-20' />
       </div>
     </div>
   );
