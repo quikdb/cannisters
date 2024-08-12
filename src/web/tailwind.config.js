@@ -47,6 +47,7 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))',
         },
         customBlue: '#002884',
+        customSkyBlue: '#00acc1',
         customGrey: '#828282',
       },
       borderRadius: {
