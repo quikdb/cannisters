@@ -7,6 +7,7 @@ import { LayoutGrid } from 'lucide-react';
 import { ListFilter } from 'lucide-react';
 import { Search } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 export function ProjectsTable() {
   const projects = [
@@ -26,10 +27,12 @@ export function ProjectsTable() {
     <main className='flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
       <div className='flex justify-between items-center'>
         <h1 className='text-lg font-bold md:text-2xl font-nunito'>Projects</h1>
-        <Button className='bg-customBlue flex gap-2 font-nunito'>
-          <CirclePlus size={16} />
-          New Project
-        </Button>{' '}
+        <Link href='/dashboard/projects/1' className='text-[#d0d0d0]'>
+          <Button className='bg-customBlue flex gap-2 font-nunito'>
+            <CirclePlus size={16} />
+            New Project
+          </Button>
+        </Link>
       </div>
 
       {/* Search and Filter Components */}

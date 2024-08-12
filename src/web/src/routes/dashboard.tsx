@@ -12,7 +12,7 @@ export const DashboardRoutes: React.FC = () => {
         <Route path='home' element={<Home />} />
         <Route path='project' element={<ProjectsPage />} />
         <Route path='projects' element={<ProjectsListPage />} />
-        <Route path='project/:projectId' element={<ProjectSinglePage />} />
+        <Route path='projects/:projectId' element={<ProjectSinglePage />} />
       </Routes>
     </>
   );
