@@ -18,7 +18,7 @@ module {
             data = data;
             createdAt = Time.now();
             };
-            return Result.Result.ok(item);
+            return #ok(item);
         }
     }
 }
