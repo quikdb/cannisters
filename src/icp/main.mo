@@ -6,5 +6,4 @@ actor QuikDB {
     stable var projects: [Project.Project] = [];
     stable var dataGroups: [DataGroup.DataGroup] = [];
     stable var items: [Item.Item] = [];
-    
 }
