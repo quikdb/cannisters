@@ -7,10 +7,4 @@ module {
             return #err(#ValidationError("String cannot be empty"));
         } else return #ok true;
     };
-
-    public func validateInteger(data: Text): Result.Result<Bool, ErrorTypes.QuikDBError> {
-        if (data.chars().all(Text.isDigit)) {
-            return #ok true;
-        } else return return #err(#ValidationError("Invalid integer format"));
-    }
 }
