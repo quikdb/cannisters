@@ -12,7 +12,7 @@ export function Project() {
         <div className='flex flex-col items-center gap-1 text-center'>
           <h3 className='text-2xl font-bold tracking-tight font-nunito'>You have no projects</h3>
           <p className='text-sm text-muted-foreground font-nunito'>Click to add a new project.</p>
-          <Link to='/dashboard/projects'>
+          <Link to='/dashboard/project/list'>
             <Button className='mt-4 font-nunito bg-customBlue'>Create Project</Button>
           </Link>
         </div>

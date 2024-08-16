@@ -6,3 +6,4 @@ export * from './SideBar';
 export * from './ProjectsTable';
 export * from "./ProjectsSingleTable"
 export * from "./ProjectsSingleSidebar"
+export * from "./Modal"
