@@ -5,7 +5,6 @@ module {
     public type DataGroup = {
         groupId: Text;
         name: Text;
-        schema: ?Text;
     };
 
     public func createDataGroup(groupId: Text, name: Text, schema: ?Text): Result.Result<DataGroup, ErrorTypes.QuikDBError> {
