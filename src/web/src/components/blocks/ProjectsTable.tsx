@@ -11,11 +11,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Modal } from './Modal';
 
-
 export function ProjectsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'project' | 'database'>('project');
- 
+
   const projects = [
     { id: 1, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
     { id: 2, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
@@ -37,8 +36,8 @@ export function ProjectsTable() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
- const handleRowClick = () => {
-    window.location.href = '/dashboard/project/groups'; // Navigate to the desired page
+  const handleRowClick = () => {
+    window.location.href = '/dashboard/project/groups';
   };
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
@@ -88,16 +87,16 @@ export function ProjectsTable() {
           </TableHeader>
           <TableBody>
             {projects.map((project) => (
-              <TableRow key={project.id} className="cursor-pointer hover:bg-gray-100" onClick={handleRowClick}>
-                  <TableCell className='p-4'>
+              <TableRow key={project.id} className='cursor-pointer hover:bg-gray-100' onClick={handleRowClick}>
+                <TableCell className='p-4'>
                   <input type='checkbox' onClick={(e) => e.stopPropagation()} />
                 </TableCell>
-                  <TableCell className='text-customSkyBlue p-4'>{project.name}</TableCell>
-                  <TableCell className='text-[#42526d] p-4'>{project.date}</TableCell>
-                  <TableCell className='text-[#42526d] p-4'>{project.createdBy}</TableCell>
-                  <TableCell className='text-[#42526d] p-4'>{project.clusters}</TableCell>
-                  <TableCell className='text-[#42526d] p-4'>{project.users}</TableCell>
-                </TableRow>
+                <TableCell className='text-customSkyBlue p-4'>{project.name}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.date}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.createdBy}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.clusters}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.users}</TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>
