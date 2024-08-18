@@ -1,10 +1,12 @@
 import Nat "mo:base/Nat";
 import Array "mo:base/Array";
 import Principal "mo:base/Principal";
+import Result "mo:base/Result";
 
 /// internal modules
 import Project "../models/Project";
 import idGen "../models/IdGen";
+import ErrorTypes "../models/ErrorTypes";
 
 actor ProjectController {
     let projectMaxNumber: Nat = 2;
@@ -43,11 +45,7 @@ actor ProjectController {
     /// A `Text` value representing the generated unique ID.
     public shared query func generateId(entity: Text): async Text {
         let prefix: Nat = 0; // Example prefix, you may modify it based on entity
-
-        // Increment the project counter to ensure uniqueness.
         projectCounter := projectCounter + 1;
-
-        // Generate the unique ID using the `idGen` module.
         return idGen.generateUniqueId(projectCounter, prefix);
     };
 
@@ -66,11 +64,10 @@ actor ProjectController {
     /// # Returns
     ///
     /// An optional `Project.Project` object representing the newly created project.
-    /// Returns `null` if the project creation limit has been reached or an error occurs.
-    public shared func createProject(name: Text, description: Text, createdBy: Principal): async ?Project.Project {
-        // Check if the number of projects has reached the projectMaxNumber limit.
+    /// Returns `ErrorTypes.QuikDBError` if the project creation limit has been reached or an error occurs.
+    public shared func createProject(name: Text, description: Text, createdBy: Principal): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
         if (projects.size() >= projectMaxNumber) {
-            return null;  // Return null if the maximum number of projects has been reached.
+            return #err(#ValidationError("number of dataGroups has reached the projectMaxNumber limit"));
         };
 
         let projectId = generateId(Principal.toText(createdBy));
@@ -80,12 +77,12 @@ actor ProjectController {
         // Handle the result of the project creation.
         let newProject = switch (newProjectResult) {
             case (#ok project) project;
-            case (#err _) return null;  // Return null if an error occurs during project creation.
+            case (#err error) return #err(error);
         };
 
         projects[1] := newProject;
 
-        return ?newProject;
+        return #ok(?newProject);
     };
 
     /// Retrieves all projects currently stored in the system.

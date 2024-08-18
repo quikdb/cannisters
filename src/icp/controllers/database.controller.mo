@@ -9,7 +9,6 @@ import idGen "../models/IdGen";
 import ErrorTypes "../models/ErrorTypes";
 
 actor DatabaseController {
-    /// The maximum number of databases that can be created.
     let databaseMaxNumber: Nat = 5;
 
     /// A counter used for generating unique project IDs.
@@ -47,10 +46,8 @@ actor DatabaseController {
     public shared query func generateId(entity: Text): async Text {
         let prefix: Nat = 0; // Example prefix, you may modify it based on entity
 
-        // Increment the project counter to ensure uniqueness.
         databaseCounter := databaseCounter + 1;
-
-        // Generate the unique ID using the `idGen` module.
+        
         return idGen.generateUniqueId(databaseCounter, prefix);
     };
 
@@ -62,8 +59,9 @@ actor DatabaseController {
     ///
     /// # Arguments
     ///
-    /// * `name` - The name of the database to be created.
-    /// * `description` - A brief description of the database.
+    /// * `projectId` - The unique identifier for the new database.
+    /// * `count` - The database identifier, must be be between 1 and 5.
+    /// * `dbName` - The name of the database to be created.
     /// * `createdBy` - The `Principal` of the user creating the database.
     ///
     /// # Returns
@@ -71,12 +69,13 @@ actor DatabaseController {
     /// An optional `Database.Database` object representing the newly created project.
     /// Returns `null` if the project creation limit has been reached or an error occurs.
     public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Principal): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
-        // Check if the number of databases has reached the databaseMaxNumber limit.
         if (databases.size() >= databaseMaxNumber) {
             return #err(#ValidationError("number of databases has reached the databaseMaxNumber limit"));
         };
 
-        if (count > 5) return #err(#ValidationError("Invalid database identifier. count must be be <=5 and >=1"));
+        if (count > 5) return #err(#ValidationError("Invalid database identifier. count must be be <=5"));
+
+        if (count < 1) return #err(#ValidationError("Invalid database identifier. count must be be >=1"));
 
         let databaseId = generateId(Principal.toText(createdBy));
 
