@@ -15,7 +15,7 @@ actor QuikDB {
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Projects /////////////////////////
     let projectMaxNumber: Nat = 2;
-    stable var projectCounter: Nat = 0;
+    stable var projectCounter: Nat = 0; // using as the unique id.
     let defaultProjectResult = Project.createProject(
         projectCounter, 
         "quik", 
@@ -30,9 +30,8 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Datagroups /////////////////////////
-    let databaseMaxNumber: Nat = 5;
     let databaseGroupMaxNumber: Nat = 5;
-    stable var dataGroupCounter: Nat = 0;
+    stable var dataGroupCounter: Nat = 0; // unique id for data groups
     let defaultGroupResult = DataGroup.createDataGroup(
         0,
         dataGroupCounter,
@@ -47,7 +46,8 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Database /////////////////////////
-    stable var databaseCounter: Nat = 0;
+    let databaseMaxNumber: Nat = 5;
+    stable var databaseCounter: Nat = 0; // unique id for database
     let defaultDatabaseResult = Database.createDatabase(
         0,
         databaseCounter,
@@ -105,7 +105,7 @@ actor QuikDB {
             case (#err error) return #err(error);
         };
 
-        dataGroups[groupCount - 1] := newDataGroup;
+        dataGroups[dataGroupCounter - 1] := newDataGroup;
 
         return #ok(?newDataGroup);
     };
@@ -180,7 +180,7 @@ actor QuikDB {
             case (#err error) return #err(error);
         };
 
-        databases[count - 1] := newDatabase;
+        databases[databaseCounter - 1] := newDatabase;
 
         return #ok(?newDatabase);
     };
@@ -249,7 +249,7 @@ actor QuikDB {
     };
 
     ////////////////////////////////////////////////////////////////
-    ////////////////// Item Functions /////////////////////////
+    //////////////////// Item Functions ///////////////////////////
 
     public func putItem(key: Text, value: Blob): async Result.Result<Text, ErrorTypes.QuikDBError> {
         if (value.size() == 0) {
