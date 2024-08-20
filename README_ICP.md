@@ -26,7 +26,7 @@ If you want to test your project locally, you can use the following commands:
 ```bash
 # Starts the replica, running in the background
 npm run setup
-npm run dfx:build
+npm run build:dfx
 ```
 
 Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.

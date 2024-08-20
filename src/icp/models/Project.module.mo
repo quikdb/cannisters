@@ -1,7 +1,9 @@
-import ErrorTypes "../models/ErrorTypes";
 import Time "mo:base/Time";
 import Result "mo:base/Result";
 import Principal "mo:base/Principal";
+
+/// internal modules
+import ErrorTypes "../models/ErrorTypes.module";
 
 module {
 
@@ -56,6 +58,7 @@ module {
                 description = description;
                 createdBy = createdBy;
                 createdAt = Time.now();
+                updatedAt = Time.now();
             };
         }
     }

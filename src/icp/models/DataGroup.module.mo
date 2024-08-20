@@ -1,7 +1,9 @@
-import ErrorTypes "../models/ErrorTypes";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
+
+/// internal modules
+import ErrorTypes "../models/ErrorTypes.module";
 
 module {
 
@@ -58,6 +60,7 @@ module {
                 name = name;
                 createdBy = createdBy;
                 createdAt = Time.now();
+                updatedAt = Time.now();
             };
             return #ok(dataGroup);
         }
