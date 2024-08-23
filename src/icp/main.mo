@@ -2,6 +2,8 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Nat "mo:base/Nat";
 import Array "mo:base/Array";
+import Debug "mo:base/Debug";
+import Time "mo:base/Time";
 
 /// internal modules
 import Project "models/Project.module";
@@ -20,11 +22,21 @@ actor QuikDB {
         projectCounter, 
         "quik", 
         "Default Project", 
-        Principal.fromText("default")
+        Principal.fromText("2vxsx-fae")
     );
     let defaultProject = switch (defaultProjectResult) {
         case (#ok project) project;
-        // In a real-world scenario, you may handle the error case here.
+    case (#err error) {
+        Debug.print(ErrorTypes.errorMessage(error)); // Log the error
+        {
+    projectId = 0;
+    name = "Fallback Project";
+    description = "Fallback project description due to error";
+    createdBy = Principal.fromText("2vxsx-fae"); // Use a known valid Principal
+    createdAt = Time.now();
+    updatedAt = Time.now();
+}; // Use the fallback project in case of an error
+    }
     };
     stable var projects: [var Project.Project] = [var defaultProject, defaultProject];
 
@@ -37,10 +49,21 @@ actor QuikDB {
         dataGroupCounter,
         0,
         "Default DataGroup", 
-        Principal.fromText("default")
+        Principal.fromText("2vxsx-fae")
     );
     let defaultDataGroup = switch (defaultGroupResult) {
         case (#ok dataGroup) dataGroup;
+    case (#err(error)) {
+        Debug.print(ErrorTypes.errorMessage(error));
+        {
+            createdAt = Time.now();
+            createdBy = Principal.fromText("2vxsx-fae");
+            databaseId = 0;
+            groupId = 0;
+            name = "Default DataGroup";
+            projectId = 0;
+        }
+    };
     };
     stable var dataGroups: [var DataGroup.DataGroup] = [var defaultDataGroup, defaultDataGroup, defaultDataGroup, defaultDataGroup, defaultDataGroup];
 
@@ -52,11 +75,20 @@ actor QuikDB {
         0,
         databaseCounter,
         "Default Database", 
-        Principal.fromText("default")
+        Principal.fromText("2vxsx-fae")
     );
     let defaultDatabase = switch (defaultDatabaseResult) {
         case (#ok database) database;
-        // In a real-world scenario, you may handle the error case here.
+    case (#err(error)) {
+        Debug.print(ErrorTypes.errorMessage(error));
+        {
+            createdAt = Time.now();
+            createdBy = Principal.fromText("2vxsx-fae");
+            databaseId = 0;
+            name = "Default DataGroup";
+            projectId = 0;
+        }
+    };
     };
     stable var databases: [var Database.Database] = [var defaultDatabase, defaultDatabase, defaultDatabase, defaultDatabase, defaultDatabase];
 
@@ -96,7 +128,7 @@ actor QuikDB {
 
         dataGroupCounter := dataGroupCounter + 1;
 
-        let dataGroupId = generateId(Principal.toText(createdBy), dataGroupCounter);
+        // let dataGroupId = generateId(Principal.toText(createdBy), dataGroupCounter);
 
         let newDataGroupResult = DataGroup.createDataGroup(groupCount, databaseId, projectId, groupName, createdBy);
 
@@ -136,7 +168,7 @@ actor QuikDB {
     /// # Returns
     ///
     /// A `Text` value representing the generated unique ID.
-    public shared query func generateId(entity: Text, tracker: Nat): async Text {
+    public shared query func generateId(_entity: Text, tracker: Nat): async Text {
         let prefix: Nat = 0; // Example prefix, you may modify it based on entity
         
         return idGen.generateUniqueId(tracker, prefix);
@@ -170,7 +202,7 @@ actor QuikDB {
 
         databaseCounter := databaseCounter + 1;
 
-        let databaseId = generateId(Principal.toText(createdBy), databaseCounter);
+        // let databaseId = generateId(Principal.toText(createdBy), databaseCounter);
 
         let newDatabaseResult = Database.createDatabase(projectId, count, dbName, createdBy);
 
@@ -222,7 +254,7 @@ actor QuikDB {
 
         projectCounter := projectCounter + 1;
 
-        let projectId = generateId(Principal.toText(createdBy), projectCounter);
+        // let projectId = generateId(Principal.toText(createdBy), projectCounter);
 
         let newProjectResult = Project.createProject(projectCounter, name, description, createdBy);
 
