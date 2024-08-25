@@ -1,8 +1,6 @@
 import Time "mo:base/Time";
 import Blob "mo:base/Blob";
 module {
-
-    /// Represents an Item in the key-value store.
     public type Item = {
         key: Text;
         value: Blob;
@@ -10,7 +8,6 @@ module {
         updatedAt: Time.Time;
     };
 
-    /// Creates a new item with the provided key and value.
     public func createItem(key: Text, value: Blob): Item {
         {
             key = key;

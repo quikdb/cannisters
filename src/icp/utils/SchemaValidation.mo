@@ -1,4 +1,4 @@
-import ErrorTypes "../models/ErrorTypes";
+import ErrorTypes "../models/ErrorTypes.module";
 import Result "mo:base/Result";
 
 module {

@@ -2,7 +2,7 @@ import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
 
-/// internal modules
+/// internal models
 import ErrorTypes "../models/ErrorTypes.module";
 
 module {

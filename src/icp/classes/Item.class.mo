@@ -2,7 +2,7 @@ import Result "mo:base/Result";
 import Nat "mo:base/Nat";
 import Array "mo:base/Array";
 
-/// internal modules
+/// internal models
 import GroupItemStore "../models/Item.module";
 import ErrorTypes "../models/ErrorTypes.module";
 

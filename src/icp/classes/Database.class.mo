@@ -4,7 +4,7 @@ import Nat "mo:base/Nat";
 import Array "mo:base/Array";
 import Time "mo:base/Time";
 
-/// internal modules
+/// internal models
 import Database "../models/Database.module";
 import ErrorTypes "../models/ErrorTypes.module";
 
