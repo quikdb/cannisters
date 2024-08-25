@@ -10,6 +10,7 @@ dotenv.config({ path: '../../.env' });
 
 export default defineConfig({
   build: {
+    sourcemap: true,
     emptyOutDir: true,
   },
   optimizeDeps: {
