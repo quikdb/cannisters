@@ -28,13 +28,13 @@ module {
     /// * `projectId` - The unique identifier for the new database.
     /// * `count` - The database identifier, must be be between 1 and 5.
     /// * `dbName` - The name of the database to be created.
-    /// * `createdBy` - The `Principal` of the user creating the database.
+    /// * `createdBy` - The `Text` of the user creating the database.
     ///
     /// # Returns
     ///
     /// An optional `Database.Database` object representing the newly created project.
     /// Returns `null` if the project creation limit has been reached or an error occurs.
-    public func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Principal): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
+    public func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Text): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
         if (databases.size() >= databaseMaxNumber) {
             return #err(#ValidationError("number of databases has reached the databaseMaxNumber limit"));
         };
@@ -45,7 +45,7 @@ module {
 
         // let databaseId = generateId(Principal.toText(createdBy), databaseCounter);
 
-        let newDatabaseResult = Database.createDatabase(projectId, count, dbName, createdBy);
+        let newDatabaseResult = Database.createDatabase(projectId, count, dbName, Principal.fromText(createdBy));
 
         // Handle the result of the project creation.
         let newDatabase = switch (newDatabaseResult) {
@@ -77,13 +77,13 @@ module {
     public func updateDatabase(
         databaseId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Database.Database, ErrorTypes.QuikDBError> {
         if (newName.size() == 0) {
             return #err(#ValidationError("Database name cannot be empty"));
         };
 
-        if (Principal.isAnonymous(updatedBy)) {
+        if (Principal.isAnonymous(Principal.fromText(updatedBy))) {
             return #err(#ValidationError("Invalid principal identifier"));
         };
 
@@ -107,7 +107,7 @@ module {
                             databaseId = existingDatabase.databaseId;
                             projectId = existingDatabase.projectId;
                             name = newName;
-                            createdBy = updatedBy;
+                            createdBy = Principal.fromText(updatedBy);
                             createdAt = existingDatabase.createdAt;
                             updatedAt = Time.now();
                         };

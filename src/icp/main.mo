@@ -305,25 +305,108 @@ actor QuikDB {
     ////////////////////////////////////////////////////////////////
     //////////////////// Item Functions ///////////////////////////
 
+    /// Inserts or updates an item in the store.
+    ///
+    /// This function attempts to insert a new item into the store with the given `key` and `value`.
+    /// If an item with the specified `key` already exists, it updates the item's value.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier for the item to be stored or updated.
+    /// * `value` - The data to be stored, represented as a `Blob`.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` indicating success with a message ("Created" or "Updated") or failure with an `ErrorTypes.QuikDBError`.
+    ///
+    /// - Returns `#ok("Created")` if the item was successfully created.
+    /// - Returns `#ok("Updated")` if the item was successfully updated.
+    /// - Returns `#err(#ValidationError(...))` if validation checks fail (e.g., empty value or value exceeds size limit).
     public shared func putItem(key: Text, value: Blob): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.putItem(key, value);
 
         return handleResult(result);
     };
 
+    /// Retrieves an item from the store by its key.
+    ///
+    /// This function searches the store for an item with the specified `key`.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier of the item to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` containing the `GroupItemStore.Item` if found, or an `ErrorTypes.QuikDBError` if not found.
+    ///
+    /// - Returns `#ok(item)` if the item was found.
+    /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared query func getItem(key: Text): async Result.Result<GroupItemStore.Item, ErrorTypes.QuikDBError> {
         let result = item.getItem(key);
 
         return handleResult(result);
     };
 
+    /// Deletes an item from the store by its key.
+    ///
+    /// This function removes the item with the specified `key` from the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier of the item to delete.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` indicating success with a message "Deleted" or failure with an `ErrorTypes.QuikDBError`.
+    ///
+    /// - Returns `#ok("Deleted")` if the item was successfully deleted.
+    /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared func deleteItem(key: Text): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.deleteItem(key);
 
         return handleResult(result);
     };
 
+    /// Lists all keys currently stored in the store.
+    ///
+    /// This function returns an array of all keys present in the store.
+    ///
+    /// # Returns
+    ///
+    /// An array of `Text` values representing all keys stored.
     public shared query func listAllKeys(): async [Text] {
         return item.listAllKeys();
+    };
+
+    ////////////////////////////////////////////////////////////////
+    //////////////////// Batch Functions ///////////////////////////
+
+    /// Adds or updates multiple items in the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - A list of tuples containing keys and their corresponding values to be stored.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Result.Result` indicating the success or failure of each operation.
+    public func createBatchItems(items: [(Text, Blob)]): async Result.Result<Text, ErrorTypes.QuikDBError> {
+        let result = await item.createBatchItems(items);
+
+        return handleResult(result);
+    };
+
+    /// Retrieves multiple items from the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `keys` - A list of keys to retrieve items for.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Result.Result` containing the item if found, or an error if not.
+    public shared query func getBatchItems(keys: [Text]): async [Result.Result<GroupItemStore.Item, ErrorTypes.QuikDBError>] {
+        return item.getBatchItems(keys);
     };
 }
