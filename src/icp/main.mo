@@ -95,6 +95,7 @@ actor QuikDB {
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for GroupItems //////////////////////
     stable var store: [(Text, GroupItemStore.Item)] = [];
+    let maxItemSize: Nat = 300 * 1024; // 300KB in bytes
 
     ////////////////////////////////////////////////////////////////
     ////////////////// DataGroup Functions /////////////////////////
@@ -140,6 +141,70 @@ actor QuikDB {
         dataGroups[dataGroupCounter - 1] := newDataGroup;
 
         return #ok(?newDataGroup);
+    };
+
+    /// Updates the details of an existing data group.
+    ///
+    /// This function allows modifying the `name` of an existing data group.
+    /// It performs necessary validations to ensure that the data group exists
+    /// and that the new data provided is valid.
+    ///
+    /// # Arguments
+    ///
+    /// * `dataGroupId` - The unique identifier of the data group to be updated.
+    /// * `newName` - The new name for the data group.
+    /// * `updatedBy` - The `Principal` of the user updating the data group.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` containing the updated `DataGroup.DataGroup` object if successful,
+    /// or an `ErrorTypes.QuikDBError` if the data group is not found or validations fail.
+    public shared func updateDataGroup(
+        dataGroupId: Nat,
+        newName: Text,
+        updatedBy: Principal
+    ): async Result.Result<DataGroup.DataGroup, ErrorTypes.QuikDBError> {
+        if (newName.size() == 0) {
+            return #err(#ValidationError("Data group name cannot be empty"));
+        };
+
+        if (Principal.isAnonymous(updatedBy)) {
+            return #err(#ValidationError("Invalid principal identifier"));
+        };
+
+        let g = Array.freeze<DataGroup.DataGroup>(dataGroups);
+
+        let existingDataGroupOpt = Array.find<DataGroup.DataGroup>(g, func(dg) : Bool { dg.groupId == dataGroupId });
+
+        switch (existingDataGroupOpt) {
+            case (null) {
+                return #err(#DataGroupNotFound("No data group found with the specified ID"));
+            };
+            case (?existingDataGroup) {
+                let indexOpt = Array.indexOf<DataGroup.DataGroup>(existingDataGroup, g, func(x, y) { x.groupId == y.groupId });
+
+                switch (indexOpt) {
+                    case (null) {
+                        return #err(#GeneralError("Unexpected error occurred while finding data group index"));
+                    };
+                    case (?index) {
+                        let updatedDataGroup = {
+                            groupId = existingDataGroup.groupId;
+                            databaseId = existingDataGroup.databaseId;
+                            projectId = existingDataGroup.projectId;
+                            name = newName;
+                            createdBy = updatedBy;
+                            createdAt = existingDataGroup.createdAt;
+                            updatedAt = Time.now();
+                        };
+
+                        dataGroups[index] := updatedDataGroup;
+
+                        return #ok(updatedDataGroup);
+                    };
+                }
+            };
+        }
     };
 
     /// Retrieves all dataGroups currently stored in the system.
@@ -217,6 +282,69 @@ actor QuikDB {
         return #ok(?newDatabase);
     };
 
+    /// Updates the details of an existing database.
+    ///
+    /// This function allows modifying the `name` of an existing database.
+    /// It performs necessary validations to ensure that the database exists
+    /// and that the new data provided is valid.
+    ///
+    /// # Arguments
+    ///
+    /// * `databaseId` - The unique identifier of the database to be updated.
+    /// * `newName` - The new name for the database.
+    /// * `updatedBy` - The `Principal` of the user updating the database.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` containing the updated `Database.Database` object if successful,
+    /// or an `ErrorTypes.QuikDBError` if the database is not found or validations fail.
+    public shared func updateDatabase(
+        databaseId: Nat,
+        newName: Text,
+        updatedBy: Principal
+    ): async Result.Result<Database.Database, ErrorTypes.QuikDBError> {
+        if (newName.size() == 0) {
+            return #err(#ValidationError("Database name cannot be empty"));
+        };
+
+        if (Principal.isAnonymous(updatedBy)) {
+            return #err(#ValidationError("Invalid principal identifier"));
+        };
+
+        let d = Array.freeze<Database.Database>(databases);
+
+        let existingDatabaseOpt = Array.find<Database.Database>(d, func(db) : Bool { db.databaseId == databaseId });
+
+        switch (existingDatabaseOpt) {
+            case (null) {
+                return #err(#ValidationError("No database found with the specified ID"));
+            };
+            case (?existingDatabase) {
+                let indexOpt = Array.indexOf<Database.Database>(existingDatabase, d, func(x, y) { x.databaseId == y.databaseId });
+
+                switch (indexOpt) {
+                    case (null) {
+                        return #err(#GeneralError("Unexpected error occurred while finding database index"));
+                    };
+                    case (?index) {
+                        let updatedDatabase = {
+                            databaseId = existingDatabase.databaseId;
+                            projectId = existingDatabase.projectId;
+                            name = newName;
+                            createdBy = updatedBy;
+                            createdAt = existingDatabase.createdAt;
+                            updatedAt = Time.now();
+                        };
+
+                        databases[index] := updatedDatabase;
+
+                        return #ok(updatedDatabase);
+                    };
+                }
+            };
+        }
+    };
+
     /// Retrieves all databases currently stored in the system.
     ///
     /// This function returns an array of all `Database.Database` objects stored in the `databases` array.
@@ -269,6 +397,74 @@ actor QuikDB {
         return #ok(?newProject);
     };
 
+     /// Updates the details of an existing project.
+    ///
+    /// This function allows modifying the `name` and `description` of an existing project.
+    /// It performs necessary validations to ensure that the project exists and that the new
+    /// data provided is valid.
+    ///
+    /// # Arguments
+    ///
+    /// * `projectId` - The unique identifier of the project to be updated.
+    /// * `newName` - The new name for the project.
+    /// * `newDescription` - The new description for the project.
+    /// * `updatedBy` - The `Principal` of the user updating the project.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` containing the updated `Project.Project` object if successful,
+    /// or an `ErrorTypes.QuikDBError` if the project is not found or validations fail.
+    public shared func updateProject(
+        projectId: Nat,
+        newName: Text,
+        newDescription: Text,
+        updatedBy: Principal
+    ): async Result.Result<Project.Project, ErrorTypes.QuikDBError> {
+        if (newName.size() == 0) {
+            return #err(#ValidationError("Project name cannot be empty"));
+        };
+
+        if (newDescription.size() == 0) {
+            return #err(#ValidationError("Project description cannot be empty"));
+        };
+
+        if (Principal.isAnonymous(updatedBy)) {
+            return #err(#ValidationError("Invalid principal identifier"));
+        };
+
+        let p = Array.freeze<Project.Project>(projects);
+        let existingProjectOpt = Array.find<Project.Project>(p, func(proj) : Bool { proj.projectId == projectId });
+
+        switch (existingProjectOpt) {
+            case (null) {
+                return #err(#ProjectNotFound("No project found with the specified ID"));
+            };
+            case (?existingProject) {
+                let indexOpt = Array.indexOf<Project.Project>(existingProject, p, func(x, y) { x.projectId == y.projectId });
+
+                switch (indexOpt) {
+                    case (null) {
+                        return #err(#GeneralError("Unexpected error occurred while finding project index"));
+                    };
+                    case (?index) {
+                        let updatedProject = {
+                            projectId = existingProject.projectId;
+                            name = newName;
+                            description = newDescription;
+                            createdBy = updatedBy;
+                            createdAt = existingProject.createdAt;
+                            updatedAt = Time.now();
+                        };
+
+                        projects[index] := updatedProject;
+
+                        return #ok(updatedProject);
+                    };
+        };
+    };
+        };
+    };
+
     /// Retrieves all projects currently stored in the system.
     ///
     /// This function returns an array of all `Project.Project` objects stored in the `projects` array.
@@ -286,6 +482,10 @@ actor QuikDB {
     public func putItem(key: Text, value: Blob): async Result.Result<Text, ErrorTypes.QuikDBError> {
         if (value.size() == 0) {
             return #err(#ValidationError("Value cannot be empty"));
+        };
+
+        if (value.size() > maxItemSize) {
+            return #err(#ValidationError("Value exceeds the maximum size of 300KB"));
         };
 
         let existingItemOpt = Array.find<(Text, GroupItemStore.Item)>(store, func(kv) : Bool { kv.0 == key });
