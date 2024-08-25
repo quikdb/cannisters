@@ -27,9 +27,8 @@ export function ProjectSingle() {
             <h1 className='text-black text-2xl font-semibold font-nunito'>My first project</h1>
             {/* Tabs */}
             <div className='flex gap-8 border-b border-gray-300 mb-2'>
-              <div className='pb-2 border-b-2 border-customBlue text-customBlue cursor-pointer'>Collection</div>
-              <div className='pb-2 text-gray-500 cursor-pointer hover:text-customBlue'>Project Collaborators</div>
-              <div className='pb-2 text-gray-500 cursor-pointer hover:text-customBlue'>Connect</div>
+              <div className='pb-2 border-b-2 border-customBlue text-customBlue cursor-pointer'>Databases</div>
+             
             </div>
           </div>
 
