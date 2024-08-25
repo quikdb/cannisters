@@ -106,7 +106,7 @@ actor QuikDB {
     ///
     /// An optional `Project.Project` object representing the newly created project.
     /// Returns `ErrorTypes.QuikDBError` if the project creation limit has been reached or an error occurs.
-    public shared func createProject(name: Text, description: Text, createdBy: Principal): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
+    public shared func createProject(name: Text, description: Text, createdBy: Text): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
         projectCounter := projectCounter + 1;
         let result = await prjt.createProject(name, description, createdBy);
 
@@ -134,7 +134,7 @@ actor QuikDB {
         projectId: Nat,
         newName: Text,
         newDescription: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Project.Project, ErrorTypes.QuikDBError> {
         let result = await prjt.updateProject(projectId, newName, newDescription, updatedBy);
 
@@ -190,7 +190,7 @@ actor QuikDB {
     ///
     /// An optional `Database.Database` object representing the newly created project.
     /// Returns `null` if the project creation limit has been reached or an error occurs.
-    public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Principal): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
+    public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Text): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
         databaseCounter := databaseCounter + 1;
 
         let result = await db.createDatabase(projectId, count, dbName, createdBy);
@@ -217,7 +217,7 @@ actor QuikDB {
     public shared func updateDatabase(
         databaseId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Database.Database, ErrorTypes.QuikDBError> {
         let result = await db.updateDatabase(databaseId, newName, updatedBy);
 
@@ -257,7 +257,7 @@ actor QuikDB {
     ///
     /// An optional `DataGroup.DataGroup` object representing the newly created dataGroup.
     /// Returns `ErrorTypes.QuikDBError` if the dataGroup creation limit has been reached or an error occurs.
-    public shared func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Principal): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
+    public shared func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Text): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         dataGroupCounter := dataGroupCounter + 1;
 
         let result = await dg.createDataGroup(databaseId, projectId, groupCount, groupName,  createdBy);
@@ -284,7 +284,7 @@ actor QuikDB {
     public shared func updateDataGroup(
         dataGroupId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         let result = await dg.updateDataGroup(dataGroupId, newName, updatedBy);
 
