@@ -8,10 +8,6 @@ export function NavMenu() {
     <NavigationMenu className='h-screen'>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className='flex gap-2'>
-            <img src={globeIcon} alt='organization' className='w-5 h-5' />
-            My Org.
-          </NavigationMenuTrigger>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

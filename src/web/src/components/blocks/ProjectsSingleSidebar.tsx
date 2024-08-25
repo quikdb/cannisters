@@ -9,8 +9,8 @@ export function ProjectsSingleSideBar() {
   return (
     <div className='border-r p-4'>
       {/* Create Database Button */}
-      <Button className='w-full border text-customBlue border-customBlue bg-white shadow-none font-nunito flex items-center justify-center gap-2'>
-        <span className='text-sm'>+ Create Database</span>
+      <Button className='w-full border bg-customBlue text-white hover:bg-white hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2'>
+        <span className='text-sm'>Create Database</span>
       </Button>
 
       {/* Search Input */}

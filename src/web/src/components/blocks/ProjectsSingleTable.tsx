@@ -38,7 +38,7 @@ export function ProjectsSingleTable() {
           <h2 className='text-lg font-bold md:text-2xl font-nunito'>Houses</h2>
           <p className='text-sm text-gray-600 mb-4'>Lorem ipsum dolor sit amet consectetur.</p>
         </div>
-        <Button className='bg-customBlue text-white flex gap-2 font-nunito' onClick={() => openModal('database')}>
+        <Button className='bg-white text-customBlue border hover:bg-customBlue hover:text-white border-customBlue flex gap-2 font-nunito' onClick={() => openModal('database')}>
           <CirclePlus size={16} />
           Insert Document
         </Button>

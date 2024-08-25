@@ -33,6 +33,7 @@ export function Project() {
       }
 
       const result: Result_5 = await icp.createProject(projectName, projectDescription, Principal.fromText('2vxsx-fae')); 
+      console.log("result", result);
 
       if ('ok' in result) {
         toast.success('Project created successfully!', {

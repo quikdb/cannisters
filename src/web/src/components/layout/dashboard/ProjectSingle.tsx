@@ -23,11 +23,11 @@ export function ProjectSingle() {
             <span className='text-customBlue'>UrbanLifeSuite</span>
           </Breadcrumb>
 
-          <div className='bg-[#f9f9f9] pt-4 pb-2 flex flex-col gap-4'>
+          <div className=' pt-4 pb-2 flex flex-col gap-4'>
             <h1 className='text-black text-2xl font-semibold font-nunito'>My first project</h1>
             {/* Tabs */}
             <div className='flex gap-8 border-b border-gray-300 mb-2'>
-              <div className='pb-2 border-b-2 border-customBlue text-customBlue cursor-pointer'>Databases</div>
+              <div className='pb-2 border-b-2 border-customBlue text-customBlue cursor-pointer'>Groups</div>
              
             </div>
           </div>
