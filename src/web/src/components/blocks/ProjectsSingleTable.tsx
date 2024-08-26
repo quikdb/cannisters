@@ -1,25 +1,39 @@
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CirclePlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CirclePlus, Trash2 } from 'lucide-react'; // Import Trash icon
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { Input } from '../ui/input';
 
 export function ProjectsSingleTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'project' | 'database'>('database');
+  const [modalType, setModalType] = useState<'project' | 'database' | 'document'>('document');
 
   const houses = [
-    { id: '5hgkg57', location: 'New York, NY', price: '$850,000', yearBuilt: '1993', rooms: 6, squareFootage: '1,800 sq ft' },
-    { id: '5hgkg57', location: 'Los Angeles, CA', price: '$2,350,000', yearBuilt: '2000', rooms: 3, squareFootage: '2,500 sq ft' },
-    { id: '5hgkg57', location: 'Nigeria, NG', price: '$250,000', yearBuilt: '1893', rooms: 7, squareFootage: '6 Users' },
-    { id: '5hgkg57', location: '6 Users', price: '$1,050,000', yearBuilt: '2010', rooms: 3, squareFootage: '6 Users' },
-    { id: '5hgkg57', location: '6 Users', price: '$250,000', yearBuilt: '1868', rooms: 3, squareFootage: '6 Users' },
-    { id: '5hgkg57', location: '6 Users', price: '$250,000', yearBuilt: '2003', rooms: 5, squareFootage: '6 Users' },
-    { id: '5hgkg57', location: '6 Users', price: '$850,000', yearBuilt: '1893', rooms: 3, squareFootage: '6 Users' },
+    {
+      id: '5hgkg57',
+      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
+    },
+    {
+      id: '5hgkg57',
+      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
+    },
+    {
+      id: '5hgkg57',
+      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
+    },
+    {
+      id: '5hgkg57',
+      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
+    },
+    {
+      id: '5hgkg57',
+      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
+    },
+    // Repeat or add more objects as needed
   ];
 
-  const openModal = (type: 'project' | 'database') => {
+  const openModal = (type: 'project' | 'database' | 'document') => {
     setModalType(type);
     setIsModalOpen(true);
   };
@@ -27,18 +41,22 @@ export function ProjectsSingleTable() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
   const handleRowClick = () => {
     window.location.href = '/dashboard/project/groups';
   };
 
   return (
     <main className='flex flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
-      <div className='flex justify-between items-center '>
+      <div className='flex justify-between items-center'>
         <div className='flex flex-col gap-1'>
           <h2 className='text-lg font-bold md:text-2xl font-nunito'>Houses</h2>
           <p className='text-sm text-gray-600 mb-4'>Lorem ipsum dolor sit amet consectetur.</p>
         </div>
-        <Button className='bg-white text-customBlue border hover:bg-customBlue hover:text-white border-customBlue flex gap-2 font-nunito' onClick={() => openModal('database')}>
+        <Button
+          className='bg-white text-customBlue border hover:bg-customBlue hover:text-white border-customBlue flex gap-2 font-nunito'
+          onClick={() => openModal('document')}
+        >
           <CirclePlus size={16} />
           Insert Document
         </Button>
@@ -49,22 +67,20 @@ export function ProjectsSingleTable() {
           <TableHeader className='bg-[#fafbfb]'>
             <TableRow>
               <TableHead className='p-4'>id</TableHead>
-              <TableHead className='p-4'>Location</TableHead>
-              <TableHead className='p-4'>Price</TableHead>
-              <TableHead className='p-4'>Year Built</TableHead>
-              <TableHead className='p-4'>Rooms</TableHead>
-              <TableHead className='p-4'>Square Footage</TableHead>
+              <TableHead className='p-4'>Document</TableHead>
+              <TableHead className='p-4'></TableHead> {/* Empty header for the delete icon */}
             </TableRow>
           </TableHeader>
           <TableBody>
             {houses.map((house, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
                 <TableCell className='p-4 text-customSkyBlue'>{house.id}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.location}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.price}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.yearBuilt}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.rooms}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.squareFootage}</TableCell>
+                <TableCell className='p-4 text-[#42526d]'>{house.document}</TableCell>
+                <TableCell className='p-4 text-right'>
+                  <Button className='bg-transparent hover:bg-red-100 shadow-none  text-red-500'>
+                    <Trash2 size={16} />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

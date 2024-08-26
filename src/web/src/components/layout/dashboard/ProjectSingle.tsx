@@ -16,7 +16,7 @@ export function ProjectSingle() {
         <NavBar />
         <div className='p-6'>
           {/* Breadcrumb */}
-          <Breadcrumb className='font-medium text-base mb-4'>
+          <Breadcrumb className='font-medium text-base '>
             <Link href='/projects' className='text-[#d0d0d0]'>
               Projects /
             </Link>{' '}
