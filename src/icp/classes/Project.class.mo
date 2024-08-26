@@ -14,6 +14,8 @@ module {
     /////////////// Variables for Projects /////////////////////////
     let projectMaxNumber: Nat = 2;
 
+    let id = projectCounter;
+
     ////////////////////////////////////////////////////////////////
     ////////////////// Project Functions /////////////////////////
 
@@ -47,7 +49,7 @@ module {
             case (#err error) return #err(error);
         };
 
-        projects[projectCounter] := newProject;
+        projects[id] := newProject;
 
         return #ok(?newProject);
     };

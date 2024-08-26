@@ -17,6 +17,8 @@ import Db "classes/Database.class";
 import Dg "classes/DataGroup.class";
 import Store "classes/Item.class";
 
+import Logger "utils/Logger";
+
 actor QuikDB {
     /// Reusable function to handle Result.Result types.
     ///
@@ -47,7 +49,7 @@ actor QuikDB {
         var {
             projectId = 0;
             name = "Default Project";
-            description = "Default project description due to error";
+            description = "Default project description";
             createdBy = Principal.fromText("w7x7r-cok77-xa");
             createdAt = Time.now();
             updatedAt = Time.now();
@@ -114,9 +116,10 @@ actor QuikDB {
     /// An optional `Project.Project` object representing the newly created project.
     /// Returns `ErrorTypes.QuikDBError` if the project creation limit has been reached or an error occurs.
     public shared func createProject(name: Text, description: Text, createdBy: Text): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
-        projectCounter := projectCounter + 1;
+        Logger.logInfo("logging createdBy...");
+        Logger.logInfo(createdBy);
         let result = await prjt.createProject(name, description, createdBy);
-
+        projectCounter := projectCounter + 1;
         return handleResult(result);
     };
 
@@ -144,7 +147,6 @@ actor QuikDB {
         updatedBy: Text
     ): async Result.Result<Project.Project, ErrorTypes.QuikDBError> {
         let result = await prjt.updateProject(projectId, newName, newDescription, updatedBy);
-
         return handleResult(result);
     };
 
@@ -176,7 +178,6 @@ actor QuikDB {
     /// A `Text` value representing the generated unique ID.
     public shared query func generateId(_entity: Text, tracker: Nat): async Text {
         let prefix: Nat = 0; // Example prefix, you may modify it based on entity
-        
         return idGen.generateUniqueId(tracker, prefix);
     };
 
@@ -198,10 +199,8 @@ actor QuikDB {
     /// An optional `Database.Database` object representing the newly created project.
     /// Returns `null` if the project creation limit has been reached or an error occurs.
     public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Text): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
-        databaseCounter := databaseCounter + 1;
-
         let result = await db.createDatabase(projectId, count, dbName, createdBy);
-
+        databaseCounter := databaseCounter + 1;
         return handleResult(result);
     };
 
@@ -227,7 +226,6 @@ actor QuikDB {
         updatedBy: Text
     ): async Result.Result<Database.Database, ErrorTypes.QuikDBError> {
         let result = await db.updateDatabase(databaseId, newName, updatedBy);
-
         return handleResult(result);
     };
 
@@ -265,10 +263,8 @@ actor QuikDB {
     /// An optional `DataGroup.DataGroup` object representing the newly created dataGroup.
     /// Returns `ErrorTypes.QuikDBError` if the dataGroup creation limit has been reached or an error occurs.
     public shared func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Text): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
-        dataGroupCounter := dataGroupCounter + 1;
-
         let result = await dg.createDataGroup(databaseId, projectId, groupCount, groupName,  createdBy);
-
+        dataGroupCounter := dataGroupCounter + 1;
         return handleResult(result);
     };
 
@@ -294,7 +290,6 @@ actor QuikDB {
         updatedBy: Text
     ): async Result.Result<DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         let result = await dg.updateDataGroup(dataGroupId, newName, updatedBy);
-
         return handleResult(result);
     };
 
@@ -331,7 +326,6 @@ actor QuikDB {
     /// - Returns `#err(#ValidationError(...))` if validation checks fail (e.g., empty value or value exceeds size limit).
     public shared func putItem(key: Text, value: Blob): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.putItem(key, value);
-
         return handleResult(result);
     };
 
@@ -351,7 +345,6 @@ actor QuikDB {
     /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared query func getItem(key: Text): async Result.Result<GroupItemStore.Item, ErrorTypes.QuikDBError> {
         let result = item.getItem(key);
-
         return handleResult(result);
     };
 
@@ -371,7 +364,6 @@ actor QuikDB {
     /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared func deleteItem(key: Text): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.deleteItem(key);
-
         return handleResult(result);
     };
 
@@ -400,7 +392,6 @@ actor QuikDB {
     /// A list of `Result.Result` indicating the success or failure of each operation.
     public func createBatchItems(items: [(Text, Blob)]): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.createBatchItems(items);
-
         return handleResult(result);
     };
 

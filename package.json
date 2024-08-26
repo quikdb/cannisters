@@ -6,8 +6,9 @@
   "name": "app",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "setup": "dfx start --clean --background && dfx canister create web && dfx canister create icp && dfx canister create internet_identity",
-    "build:dfx": "dfx build && dfx deploy",
+    "dfx:start": "dfx start --clean",
+    "dfx:setup": "dfx canister create web && dfx canister create icp && dfx canister create internet_identity",
+    "dfx:build": "dfx build && dfx deploy",
     "prebuild": "npm run prebuild --workspaces --if-present",
     "pretest": "npm run prebuild --workspaces --if-present",
     "start": "npm start --workspaces --if-present",
