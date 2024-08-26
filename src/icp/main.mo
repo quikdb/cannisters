@@ -40,13 +40,15 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Projects /////////////////////////
-    stable var projectCounter: Nat = 0; // using as the unique id.
-    stable var projects: [var Project.Project] = [
+    // make this stable in prod
+    var projectCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var projects: [var Project.Project] = [
         var {
             projectId = 0;
             name = "Default Project";
             description = "Default project description due to error";
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             createdAt = Time.now();
             updatedAt = Time.now();
         }
@@ -55,11 +57,13 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Database /////////////////////////
-    stable var databaseCounter: Nat = 0; // using as the unique id.
-    stable var databases: [var Database.Database] = [
+    // make this stable in prod
+    var databaseCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var databases: [var Database.Database] = [
         var {
             createdAt = Time.now();
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             databaseId = 0;
             name = "Default DataGroup";
             projectId = 0;
@@ -69,11 +73,13 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Datagroups /////////////////////////
-    stable var dataGroupCounter: Nat = 0; // using as the unique id.
-    stable var dataGroups: [var DataGroup.DataGroup] = [ 
+    // make this stable in prod
+    var dataGroupCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var dataGroups: [var DataGroup.DataGroup] = [ 
         var {
             createdAt = Time.now();
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             groupId = 0;
             databaseId = 0;
             name = "Default DataGroup";
@@ -84,7 +90,8 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for GroupItems //////////////////////
-    stable var store: [(Text, GroupItemStore.Item)] = [];
+    // make this stable in prod
+    var store: [(Text, GroupItemStore.Item)] = [];
     let item =  Store.Item(store);
 
     ////////////////////////////////////////////////////////////////

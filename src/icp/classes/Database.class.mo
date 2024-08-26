@@ -53,7 +53,7 @@ module {
             case (#err error) return #err(error);
         };
 
-        databases[databaseCounter - 1] := newDatabase;
+        databases[databaseCounter] := newDatabase;
 
         return #ok(?newDatabase);
     };

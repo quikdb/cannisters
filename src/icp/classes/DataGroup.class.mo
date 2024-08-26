@@ -53,7 +53,7 @@ module {
             case (#err error) return #err(error);
         };
 
-        dataGroups[dataGroupCounter - 1] := newDataGroup;
+        dataGroups[dataGroupCounter] := newDataGroup;
 
         return #ok(?newDataGroup);
     };
