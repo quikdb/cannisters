@@ -40,13 +40,15 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Projects /////////////////////////
-    stable var projectCounter: Nat = 0; // using as the unique id.
-    stable var projects: [var Project.Project] = [
+    // make this stable in prod
+    var projectCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var projects: [var Project.Project] = [
         var {
             projectId = 0;
             name = "Default Project";
             description = "Default project description due to error";
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             createdAt = Time.now();
             updatedAt = Time.now();
         }
@@ -55,11 +57,13 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Database /////////////////////////
-    stable var databaseCounter: Nat = 0; // using as the unique id.
-    stable var databases: [var Database.Database] = [
+    // make this stable in prod
+    var databaseCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var databases: [var Database.Database] = [
         var {
             createdAt = Time.now();
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             databaseId = 0;
             name = "Default DataGroup";
             projectId = 0;
@@ -69,11 +73,13 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for Datagroups /////////////////////////
-    stable var dataGroupCounter: Nat = 0; // using as the unique id.
-    stable var dataGroups: [var DataGroup.DataGroup] = [ 
+    // make this stable in prod
+    var dataGroupCounter: Nat = 0; // using as the unique id.
+    // make this stable in prod
+    var dataGroups: [var DataGroup.DataGroup] = [ 
         var {
             createdAt = Time.now();
-            createdBy = Principal.fromText("2vxsx-fae");
+            createdBy = Principal.fromText("w7x7r-cok77-xa");
             groupId = 0;
             databaseId = 0;
             name = "Default DataGroup";
@@ -84,7 +90,8 @@ actor QuikDB {
 
     ////////////////////////////////////////////////////////////////
     /////////////// Variables for GroupItems //////////////////////
-    stable var store: [(Text, GroupItemStore.Item)] = [];
+    // make this stable in prod
+    var store: [(Text, GroupItemStore.Item)] = [];
     let item =  Store.Item(store);
 
     ////////////////////////////////////////////////////////////////
@@ -106,7 +113,7 @@ actor QuikDB {
     ///
     /// An optional `Project.Project` object representing the newly created project.
     /// Returns `ErrorTypes.QuikDBError` if the project creation limit has been reached or an error occurs.
-    public shared func createProject(name: Text, description: Text, createdBy: Principal): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
+    public shared func createProject(name: Text, description: Text, createdBy: Text): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
         projectCounter := projectCounter + 1;
         let result = await prjt.createProject(name, description, createdBy);
 
@@ -134,7 +141,7 @@ actor QuikDB {
         projectId: Nat,
         newName: Text,
         newDescription: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Project.Project, ErrorTypes.QuikDBError> {
         let result = await prjt.updateProject(projectId, newName, newDescription, updatedBy);
 
@@ -190,7 +197,7 @@ actor QuikDB {
     ///
     /// An optional `Database.Database` object representing the newly created project.
     /// Returns `null` if the project creation limit has been reached or an error occurs.
-    public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Principal): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
+    public shared func createDatabase(projectId: Nat, count: Nat, dbName: Text, createdBy: Text): async Result.Result<?Database.Database, ErrorTypes.QuikDBError> {
         databaseCounter := databaseCounter + 1;
 
         let result = await db.createDatabase(projectId, count, dbName, createdBy);
@@ -217,7 +224,7 @@ actor QuikDB {
     public shared func updateDatabase(
         databaseId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Database.Database, ErrorTypes.QuikDBError> {
         let result = await db.updateDatabase(databaseId, newName, updatedBy);
 
@@ -257,7 +264,7 @@ actor QuikDB {
     ///
     /// An optional `DataGroup.DataGroup` object representing the newly created dataGroup.
     /// Returns `ErrorTypes.QuikDBError` if the dataGroup creation limit has been reached or an error occurs.
-    public shared func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Principal): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
+    public shared func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Text): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         dataGroupCounter := dataGroupCounter + 1;
 
         let result = await dg.createDataGroup(databaseId, projectId, groupCount, groupName,  createdBy);
@@ -284,7 +291,7 @@ actor QuikDB {
     public shared func updateDataGroup(
         dataGroupId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         let result = await dg.updateDataGroup(dataGroupId, newName, updatedBy);
 
@@ -305,25 +312,108 @@ actor QuikDB {
     ////////////////////////////////////////////////////////////////
     //////////////////// Item Functions ///////////////////////////
 
+    /// Inserts or updates an item in the store.
+    ///
+    /// This function attempts to insert a new item into the store with the given `key` and `value`.
+    /// If an item with the specified `key` already exists, it updates the item's value.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier for the item to be stored or updated.
+    /// * `value` - The data to be stored, represented as a `Blob`.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` indicating success with a message ("Created" or "Updated") or failure with an `ErrorTypes.QuikDBError`.
+    ///
+    /// - Returns `#ok("Created")` if the item was successfully created.
+    /// - Returns `#ok("Updated")` if the item was successfully updated.
+    /// - Returns `#err(#ValidationError(...))` if validation checks fail (e.g., empty value or value exceeds size limit).
     public shared func putItem(key: Text, value: Blob): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.putItem(key, value);
 
         return handleResult(result);
     };
 
+    /// Retrieves an item from the store by its key.
+    ///
+    /// This function searches the store for an item with the specified `key`.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier of the item to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` containing the `GroupItemStore.Item` if found, or an `ErrorTypes.QuikDBError` if not found.
+    ///
+    /// - Returns `#ok(item)` if the item was found.
+    /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared query func getItem(key: Text): async Result.Result<GroupItemStore.Item, ErrorTypes.QuikDBError> {
         let result = item.getItem(key);
 
         return handleResult(result);
     };
 
+    /// Deletes an item from the store by its key.
+    ///
+    /// This function removes the item with the specified `key` from the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The unique identifier of the item to delete.
+    ///
+    /// # Returns
+    ///
+    /// A `Result.Result` indicating success with a message "Deleted" or failure with an `ErrorTypes.QuikDBError`.
+    ///
+    /// - Returns `#ok("Deleted")` if the item was successfully deleted.
+    /// - Returns `#err(#ValidationError("Key not found"))` if no item with the specified key exists.
     public shared func deleteItem(key: Text): async Result.Result<Text, ErrorTypes.QuikDBError> {
         let result = await item.deleteItem(key);
 
         return handleResult(result);
     };
 
+    /// Lists all keys currently stored in the store.
+    ///
+    /// This function returns an array of all keys present in the store.
+    ///
+    /// # Returns
+    ///
+    /// An array of `Text` values representing all keys stored.
     public shared query func listAllKeys(): async [Text] {
         return item.listAllKeys();
+    };
+
+    ////////////////////////////////////////////////////////////////
+    //////////////////// Batch Functions ///////////////////////////
+
+    /// Adds or updates multiple items in the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - A list of tuples containing keys and their corresponding values to be stored.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Result.Result` indicating the success or failure of each operation.
+    public func createBatchItems(items: [(Text, Blob)]): async Result.Result<Text, ErrorTypes.QuikDBError> {
+        let result = await item.createBatchItems(items);
+
+        return handleResult(result);
+    };
+
+    /// Retrieves multiple items from the store.
+    ///
+    /// # Arguments
+    ///
+    /// * `keys` - A list of keys to retrieve items for.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Result.Result` containing the item if found, or an error if not.
+    public shared query func getBatchItems(keys: [Text]): async [Result.Result<GroupItemStore.Item, ErrorTypes.QuikDBError>] {
+        return item.getBatchItems(keys);
     };
 }

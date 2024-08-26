@@ -33,14 +33,14 @@ module {
     ///
     /// An optional `Project.Project` object representing the newly created project.
     /// Returns `ErrorTypes.QuikDBError` if the project creation limit has been reached or an error occurs.
-    public func createProject(name: Text, description: Text, createdBy: Principal): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
+    public func createProject(name: Text, description: Text, createdBy: Text): async Result.Result<?Project.Project, ErrorTypes.QuikDBError>  {
         if (projects.size() >= projectMaxNumber) {
             return #err(#ValidationError("number of dataGroups has reached the projectMaxNumber limit"));
         };
 
         // let projectId = generateId(Principal.toText(createdBy), projectCounter);
 
-        let newProjectResult = Project.createProject(projectCounter, name, description, createdBy);
+        let newProjectResult = Project.createProject(projectCounter, name, description, Principal.fromText(createdBy));
 
         let newProject = switch (newProjectResult) {
             case (#ok project) project;
@@ -73,7 +73,7 @@ module {
         projectId: Nat,
         newName: Text,
         newDescription: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<Project.Project, ErrorTypes.QuikDBError> {
         if (newName.size() == 0) {
             return #err(#ValidationError("Project name cannot be empty"));
@@ -83,7 +83,7 @@ module {
             return #err(#ValidationError("Project description cannot be empty"));
         };
 
-        if (Principal.isAnonymous(updatedBy)) {
+        if (Principal.isAnonymous(Principal.fromText(updatedBy))) {
             return #err(#ValidationError("Invalid principal identifier"));
         };
 
@@ -106,7 +106,7 @@ module {
                             projectId = existingProject.projectId;
                             name = newName;
                             description = newDescription;
-                            createdBy = updatedBy;
+                            createdBy = Principal.fromText(updatedBy);
                             createdAt = existingProject.createdAt;
                             updatedAt = Time.now();
                         };

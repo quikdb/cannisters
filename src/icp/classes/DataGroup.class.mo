@@ -35,7 +35,7 @@ module {
     ///
     /// An optional `DataGroup.DataGroup` object representing the newly created dataGroup.
     /// Returns `ErrorTypes.QuikDBError` if the dataGroup creation limit has been reached or an error occurs.
-    public func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Principal): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
+    public func createDataGroup(databaseId: Nat, projectId: Nat, groupCount: Nat, groupName: Text, createdBy: Text): async Result.Result<?DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         if (dataGroups.size() >= databaseGroupMaxNumber) {
             return #err(#ValidationError("number of dataGroups has reached the databaseGroupMaxNumber limit"));
         };
@@ -46,14 +46,14 @@ module {
 
         // let dataGroupId = generateId(Principal.toText(createdBy), dataGroupCounter);
 
-        let newDataGroupResult = DataGroup.createDataGroup(groupCount, databaseId, projectId, groupName, createdBy);
+        let newDataGroupResult = DataGroup.createDataGroup(groupCount, databaseId, projectId, groupName, Principal.fromText(createdBy));
 
         let newDataGroup = switch (newDataGroupResult) {
             case (#ok project) project;
             case (#err error) return #err(error);
         };
 
-        dataGroups[dataGroupCounter - 1] := newDataGroup;
+        dataGroups[dataGroupCounter] := newDataGroup;
 
         return #ok(?newDataGroup);
     };
@@ -77,13 +77,13 @@ module {
     public func updateDataGroup(
         dataGroupId: Nat,
         newName: Text,
-        updatedBy: Principal
+        updatedBy: Text
     ): async Result.Result<DataGroup.DataGroup, ErrorTypes.QuikDBError> {
         if (newName.size() == 0) {
             return #err(#ValidationError("Data group name cannot be empty"));
         };
 
-        if (Principal.isAnonymous(updatedBy)) {
+        if (Principal.isAnonymous(Principal.fromText(updatedBy))) {
             return #err(#ValidationError("Invalid principal identifier"));
         };
 
@@ -108,7 +108,7 @@ module {
                             databaseId = existingDataGroup.databaseId;
                             projectId = existingDataGroup.projectId;
                             name = newName;
-                            createdBy = updatedBy;
+                            createdBy = Principal.fromText(updatedBy);
                             createdAt = existingDataGroup.createdAt;
                             updatedAt = Time.now();
                         };
