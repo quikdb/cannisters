@@ -1,23 +1,25 @@
 import { HttpAgent, Actor } from '@dfinity/agent';
-import { idlFactory } from '../../declarations/icp';
+import { Principal } from '@dfinity/principal';
+import { idlFactory as quikdb_idl } from '../declarations/icp';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const canisterId = 'bkyz2-fmaaa-aaaaa-qaaaq-cai';
+const canisterId = process.env.CANISTER_ID_ICP as string;
+
 const agent = new HttpAgent({ host: 'http://127.0.0.1:4943' });
+
+const quikDB = Actor.createActor(quikdb_idl, { agent, canisterId });
 
 if (process.env.NODE_ENV !== 'production') {
   agent.fetchRootKey(); // Fetch root key in non-production environments for local testing
 }
 
-const quikDB = Actor.createActor(idlFactory, {
-  agent,
-  canisterId,
-});
-
 // Project Functions
 
 export async function createProject(name: string, description: string, createdBy: string = 'w7x7r-cok77-xa') {
   try {
-    const result = await quikDB.createProject(name, description, createdBy);
+    const createdByPrincipal = Principal.fromText(createdBy);
+    const result = await quikDB.createProject(name, description, createdByPrincipal.toText());
     console.log('Project created:', result);
   } catch (err) {
     console.error('Error creating project:', err);
@@ -114,7 +116,7 @@ export async function updateDataGroup(id: number, name: string, updatedBy: strin
 
 export async function createItem(key: string, value: string) {
   try {
-    const blobValue = new Blob([value]); // Convert string to Blob
+    const blobValue = new Uint8Array(Buffer.from(value)); // Convert string to Blob
     const result = await quikDB.putItem(key, blobValue);
     console.log('Item created:', result);
   } catch (err) {
@@ -133,7 +135,7 @@ export async function listItems() {
 
 export async function updateItem(key: string, value: string) {
   try {
-    const blobValue = new Blob([value]); // Convert string to Blob
+    const blobValue = new Uint8Array(Buffer.from(value)); // Convert string to Blob
     const result = await quikDB.putItem(key, blobValue);
     console.log('Item updated:', result);
   } catch (err) {

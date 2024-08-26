@@ -1,5 +1,8 @@
 import { Command } from "commander";
-import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "./icpClient";
+import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "../icpClient.ts";
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const program = new Command();
 
@@ -10,13 +13,13 @@ program
 
 // Project commands
 program
-    .command("create-project")
-    .description("Create a new project")
-    .option("-n, --name <name>", "Project name")
-    .option("-d, --description <description>", "Project description")
-    .action(async (options) => {
-        await createProject(options.name, options.description);
-    });
+  .command('create-project')
+  .description('Create a new project')
+  .option('-n, --name <name>', 'Project name')
+  .option('-d, --description <description>', 'Project description')
+  .action(async (options) => {
+    await createProject(options.name, options.description, options.createdBy);
+  });
 
 program
     .command("list-projects")
