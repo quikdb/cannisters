@@ -23,14 +23,13 @@ export function ProjectSingle() {
   const [databaseCount, setDatabaseCount] = useState<number>(1);
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchProjectAndDatabases = async () => {
       try {
         const projects: Project[] = await icp.getProjects();
         const foundProject = projects.find((proj) => proj.projectId.toString() === projectId);
 
         if (foundProject) {
           setProject(foundProject);
-          // Fetch databases associated with the project
           const allDatabases: Database[] = await icp.getDatabases();
           const projectDatabases = allDatabases.filter((db) => db.projectId.toString() === projectId);
           setDatabases(projectDatabases);
@@ -49,7 +48,7 @@ export function ProjectSingle() {
       }
     };
 
-    fetchProject();
+    fetchProjectAndDatabases();
   }, [projectId]);
 
   const openModal = (type: 'project' | 'database') => {
@@ -75,17 +74,26 @@ export function ProjectSingle() {
         project.createdBy
       );
 
+      console.log("Create Database Result:", result);
+
       if ('ok' in result) {
+        const newDatabase = result.ok;
+        console.log("New Database:", newDatabase);
+
+        // Update state without re-fetching immediately
+        if (Array.isArray(newDatabase)) {
+          setDatabases((prevDatabases) => [...prevDatabases, ...newDatabase]);
+        } else {
+          setDatabases((prevDatabases) => [...prevDatabases, newDatabase]);
+        }
+
         toast.success('Database created successfully!', {
           position: 'top-center',
           autoClose: 3000,
         });
-        const newDatabase = result.ok;
-        if (Array.isArray(newDatabase)) {
-          setDatabases([...databases, ...newDatabase]);
-        } else {
-          setDatabases([...databases, newDatabase]);
-        }
+
+        setDatabaseName(''); 
+        setDatabaseCount(1);
         closeModal();
       } else if ('err' in result) {
         const error = result.err as QuikDBError;
@@ -109,6 +117,7 @@ export function ProjectSingle() {
         }
       }
     } catch (error: any) {
+      console.error("Error creating database:", error); // Debugging log
       toast.error(`Unexpected Error: ${error.message}`, {
         position: 'top-center',
         autoClose: 5000,
@@ -144,7 +153,7 @@ export function ProjectSingle() {
 
           <div className='grid grid-cols-[200px_1fr]'>
             {/* Sidebar Section */}
-            <ProjectsSingleSideBar />
+            <ProjectsSingleSideBar project={project} />
 
             {/* Projects Table or Placeholder */}
             {databases.length === 0 ? (
@@ -163,18 +172,18 @@ export function ProjectSingle() {
           </div>
 
           {/* Modal for creating a new database */}
-          <Modal title={modalType === 'project' ? 'Create Project' : 'Create Database'} isOpen={isModalOpen} onClose={closeModal}>
+          <Modal title='Create Database' isOpen={isModalOpen} onClose={closeModal}>
             <form onSubmit={handleCreateDatabase}>
               <div className='mb-4'>
                 <label htmlFor='databaseName' className='block text-sm font-medium font-nunito text-gray-700'>
-                  {modalType === 'project' ? 'Project Name' : 'Database Name'}
+                  Database Name
                 </label>
                 <Input
                   id='databaseName'
                   type='text'
                   value={databaseName}
                   onChange={(e) => setDatabaseName(e.target.value)}
-                  placeholder={modalType === 'project' ? 'e.g. My First Project' : 'e.g. My First Database'}
+                  placeholder='e.g. My First Database'
                   className='border border-gray-300 rounded-md p-2 w-full'
                 />
               </div>
@@ -192,7 +201,7 @@ export function ProjectSingle() {
                 />
               </div>
               <Button type='submit' className='w-full bg-customBlue text-white font-medium font-nunito py-2 rounded-md'>
-                {modalType === 'project' ? 'Create Project' : 'Create Database'}
+                Create Database
               </Button>
             </form>
           </Modal>
