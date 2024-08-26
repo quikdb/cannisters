@@ -1,10 +1,10 @@
-import { ChevronDown, Search } from 'lucide-react'; 
+import { ChevronDown, Search } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, FormEvent } from 'react';
-import { icp } from '../../../../declarations/icp/index'; 
-import { DataGroup, Project, Result_7, QuikDBError } from '../../../../declarations/icp/icp.did'; 
+import { icp } from '../../../../declarations/icp/index';
+import { DataGroup, Project, Result_7, QuikDBError } from '../../../../declarations/icp/icp.did';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal } from '../blocks/Modal';
@@ -20,7 +20,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     const fetchDataGroups = async () => {
       try {
         const result: DataGroup[] = await icp.getDataGroups();
-        setDataGroups(result); 
+        setDataGroups(result);
       } catch (error) {
         console.error('Failed to fetch data groups:', error);
       }
@@ -30,6 +30,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
   }, []);
 
   const openModal = () => {
+    console.log('Opening modal'); // Add this line for debugging
     setIsModalOpen(true);
   };
 
@@ -48,13 +49,17 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     }
 
     try {
+      const createdByString = project.createdBy.toString();
+
       const result: Result_7 = await icp.createDataGroup(
         project.projectId,
         databaseId,
-        BigInt(dataGroups.length + 1), // Using the next groupId
+        BigInt(dataGroups.length + 1), 
         groupName,
-        project.createdBy
+        createdByString 
       );
+
+      console.log('Create Data Group Result:', result);
 
       if ('ok' in result) {
         toast.success('Group created successfully!', {
@@ -65,19 +70,20 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
         const newGroup = result.ok;
         setDataGroups((prevGroups) => [...prevGroups, newGroup] as DataGroup[]);
 
-        setGroupName(''); 
+        setGroupName('');
         setDatabaseId(BigInt(0));
         closeModal();
       } else if ('err' in result) {
         const error = result.err as QuikDBError;
-        const errorMessage = 'GeneralError' in error ? error.GeneralError : 'ValidationError' in error ? error.ValidationError : 'Error creating group.';
+        const errorMessage =
+          'GeneralError' in error ? error.GeneralError : 'ValidationError' in error ? error.ValidationError : 'Error creating group.';
         toast.error(`Error: ${errorMessage}`, {
           position: 'top-center',
           autoClose: 5000,
         });
       }
     } catch (error: any) {
-      console.error("Error creating group:", error);
+      console.error('Error creating group:', error);
       toast.error(`Unexpected Error: ${error.message}`, {
         position: 'top-center',
         autoClose: 5000,
@@ -88,12 +94,14 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
   return (
     <div className='border-r p-4'>
       {/* Create Group Button */}
-      <Button 
-        className='w-full border bg-customBlue text-white hover:bg-white hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2'
-        onClick={openModal}
-      >
-        <span className='text-sm'>Create Group</span>
-      </Button>
+      <div>
+        <Button
+          className='w-full border bg-customBlue text-white hover:bg-white hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2'
+          onClick={() => openModal()}
+        >
+          <span className='text-sm'>Create Group</span>
+        </Button>
+      </div>
 
       {/* Search Input */}
       <div className='mt-4 mb-6'>

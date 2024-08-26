@@ -1,26 +1,16 @@
-import { useEffect, useState, FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { NavBar, SideBar, ProjectsSingleSideBar, ProjectsSingleTable } from '@/components/blocks';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { icp } from '../../../../../declarations/icp';
-import { Project, QuikDBError, Database, Result_6 } from '../../../../../declarations/icp/icp.did';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Modal } from '../../blocks/Modal';
-import { Principal } from '@dfinity/principal';
+import { Project, QuikDBError, Database } from '../../../../../declarations/icp/icp.did';
 
 export function ProjectSingle() {
   const { projectId } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [databases, setDatabases] = useState<Database[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalType, setModalType] = useState<'project' | 'database'>('database');
-  const [databaseName, setDatabaseName] = useState<string>('');
-  const [databaseCount, setDatabaseCount] = useState<number>(1);
 
   useEffect(() => {
     const fetchProjectAndDatabases = async () => {
@@ -50,80 +40,6 @@ export function ProjectSingle() {
 
     fetchProjectAndDatabases();
   }, [projectId]);
-
-  const openModal = (type: 'project' | 'database') => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCreateDatabase = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      if (!icp || !project) {
-        throw new Error('ICP canister or project is not initialized.');
-      }
-
-      const result: Result_6 = await icp.createDatabase(
-        project.projectId,
-        BigInt(databaseCount),
-        databaseName,
-        project.createdBy
-      );
-
-      console.log("Create Database Result:", result);
-
-      if ('ok' in result) {
-        const newDatabase = result.ok;
-        console.log("New Database:", newDatabase);
-
-        // Update state without re-fetching immediately
-        if (Array.isArray(newDatabase)) {
-          setDatabases((prevDatabases) => [...prevDatabases, ...newDatabase]);
-        } else {
-          setDatabases((prevDatabases) => [...prevDatabases, newDatabase]);
-        }
-
-        toast.success('Database created successfully!', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
-
-        setDatabaseName(''); 
-        setDatabaseCount(1);
-        closeModal();
-      } else if ('err' in result) {
-        const error = result.err as QuikDBError;
-
-        if ('GeneralError' in error) {
-          toast.error(`Error: General Error - ${error.GeneralError}`, {
-            position: 'top-center',
-            autoClose: 5000,
-          });
-        } else if ('ValidationError' in error) {
-          toast.error(`Error: Validation Error - ${error.ValidationError}`, {
-            position: 'top-center',
-            autoClose: 5000,
-          });
-        } else {
-          const errorKey = Object.keys(error)[0] as keyof QuikDBError;
-          toast.error(`Error: ${errorKey} - ${error[errorKey]}`, {
-            position: 'top-center',
-            autoClose: 5000,
-          });
-        }
-      }
-    } catch (error: any) {
-      console.error("Error creating database:", error); // Debugging log
-      toast.error(`Unexpected Error: ${error.message}`, {
-        position: 'top-center',
-        autoClose: 5000,
-      });
-    }
-  };
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -156,55 +72,14 @@ export function ProjectSingle() {
             <ProjectsSingleSideBar project={project} />
 
             {/* Projects Table or Placeholder */}
-            {databases.length === 0 ? (
-              <div className='flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm'>
-                <div className='flex flex-col items-center gap-1 text-center'>
-                  <h3 className='text-2xl font-bold tracking-tight font-nunito'>You have no databases</h3>
-                  <p className='text-sm text-muted-foreground font-nunito'>Click to add a new database.</p>
-                  <Button className='mt-4 font-nunito bg-customBlue' onClick={() => openModal('database')}>
-                    Create Database
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <ProjectsSingleTable databases={databases} />
+            {project && (
+              <ProjectsSingleTable
+                projectId={project.projectId.toString()}
+                databases={databases}
+                setDatabases={setDatabases}
+              />
             )}
           </div>
-
-          {/* Modal for creating a new database */}
-          <Modal title='Create Database' isOpen={isModalOpen} onClose={closeModal}>
-            <form onSubmit={handleCreateDatabase}>
-              <div className='mb-4'>
-                <label htmlFor='databaseName' className='block text-sm font-medium font-nunito text-gray-700'>
-                  Database Name
-                </label>
-                <Input
-                  id='databaseName'
-                  type='text'
-                  value={databaseName}
-                  onChange={(e) => setDatabaseName(e.target.value)}
-                  placeholder='e.g. My First Database'
-                  className='border border-gray-300 rounded-md p-2 w-full'
-                />
-              </div>
-              <div className='mb-4'>
-                <label htmlFor='databaseCount' className='block text-sm font-medium font-nunito text-gray-700'>
-                  Count
-                </label>
-                <Input
-                  id='databaseCount'
-                  type='number'
-                  value={databaseCount}
-                  onChange={(e) => setDatabaseCount(Number(e.target.value))}
-                  placeholder='e.g. 1'
-                  className='border border-gray-300 rounded-md p-2 w-full'
-                />
-              </div>
-              <Button type='submit' className='w-full bg-customBlue text-white font-medium font-nunito py-2 rounded-md'>
-                Create Database
-              </Button>
-            </form>
-          </Modal>
         </div>
       </div>
     </div>

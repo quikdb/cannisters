@@ -32,17 +32,18 @@ export function Project() {
         throw new Error('ICP canister is not initialized.');
       }
 
-      const result: Result_5 = await icp.createProject(projectName, projectDescription, Principal.fromText("w7x7r-cok77-xa")); 
-      console.log("result", result);
+      const principalString = Principal.fromText('w7x7r-cok77-xa').toString();
+      const result: Result_5 = await icp.createProject(projectName, projectDescription, principalString);
+      console.log('result', result);
 
       if ('ok' in result) {
         toast.success('Project created successfully!', {
           position: 'top-center',
           autoClose: 3000,
         });
-        navigate('/dashboard/project/list'); 
+        navigate('/dashboard/project/list');
       } else if ('err' in result) {
-        const error = result.err as QuikDBError; 
+        const error = result.err as QuikDBError;
 
         if ('GeneralError' in error) {
           toast.error(`Error: General Error - ${error.GeneralError}`, {
