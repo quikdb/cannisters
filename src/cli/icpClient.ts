@@ -1,22 +1,23 @@
 import { HttpAgent, Actor } from '@dfinity/agent';
-import { idlFactory } from '../../declarations/icp';
+import { idlFactory as quikdb_idl, canisterId as quikdb_id } from '../declarations/icp';
 
-const canisterId = 'bkyz2-fmaaa-aaaaa-qaaaq-cai';
 const agent = new HttpAgent({ host: 'http://127.0.0.1:4943' });
+const quikDB = Actor.createActor(quikdb_idl, { agent, canisterId: quikdb_id });
 
 if (process.env.NODE_ENV !== 'production') {
   agent.fetchRootKey(); // Fetch root key in non-production environments for local testing
 }
 
-const quikDB = Actor.createActor(idlFactory, {
-  agent,
-  canisterId,
-});
+// const quikDB = Actor.createActor(idlFactory, {
+//   agent,
+//   canisterId,
+// });
 
 // Project Functions
 
 export async function createProject(name: string, description: string, createdBy: string = 'w7x7r-cok77-xa') {
   try {
+    console.log({ name, createdBy, description })
     const result = await quikDB.createProject(name, description, createdBy);
     console.log('Project created:', result);
   } catch (err) {

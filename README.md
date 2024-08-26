@@ -32,3 +32,7 @@ The size limitations for the beta project are crucial for determining how to bes
 ### **Canister-Based Resource Allocation**
 
 The system will allocate a separate canister for each user. This approach helps manage space allocation efficiently and increases the number of users on the ICP blockchain. By isolating resources in individual canisters, the system can better handle the demands of high-resource users while maintaining optimal performance for all users.
+
+```
+npx tsx src/index.ts create-project --name "My New Project" --description "Project Description"
+```

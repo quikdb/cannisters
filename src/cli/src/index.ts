@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "./icpClient";
+import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "../icpClient.ts";
 
 const program = new Command();
 
