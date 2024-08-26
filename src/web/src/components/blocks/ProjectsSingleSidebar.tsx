@@ -1,14 +1,31 @@
-import { Button } from '@/components/ui/button';
-import arrowDown from '../../images/arrow-down.svg';
-import arrowRight from '../../images/arrow-right.svg';
+import { ChevronDown, ChevronRight, Search } from 'lucide-react'; 
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-
+import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { icp } from '../../../../declarations/icp/index'; 
+import { DataGroup } from '../../../../declarations/icp/icp.did'; 
 export function ProjectsSingleSideBar() {
+  
+  const [dataGroups, setDataGroups] = useState<DataGroup[]>([]);
+
+  useEffect(() => {
+    const fetchDataGroups = async () => {
+      try {
+        const result: DataGroup[] = await icp.getDataGroups();
+        console.log('Data groups:', result);  
+        setDataGroups(result); 
+      } catch (error) {
+        console.error('Failed to fetch data groups:', error);
+      }
+    };
+
+    fetchDataGroups();
+  }, []);
+
   return (
     <div className='border-r p-4'>
-      {/* Create Database Button */}
+      {/* Create Group Button */}
       <Button className='w-full border bg-customBlue text-white hover:bg-white hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2'>
         <span className='text-sm'>Create Group</span>
       </Button>
@@ -27,58 +44,14 @@ export function ProjectsSingleSideBar() {
 
       {/* Sidebar Navigation */}
       <ul className='space-y-4 text-sm'>
-        <li>
-          <Link href='#' className='text-gray-600 flex items-center gap-2'>
-            <img src={arrowRight} alt='' className='inline-block' />
-            Healthcare
-          </Link>
-        </li>
-        <li>
-          <Link href='#' className='text-customBlue flex items-center gap-2'>
-            <img src={arrowDown} alt='' className='inline-block' />
-            RealEstate
-          </Link>
-          <ul className='ml-6 space-y-2 mt-2'>
-            <li>
-              <Link href='#' className='text-customBlue border-l-2 border-customBlue pl-2'>
-                Houses
-              </Link>
-            </li>
-            <li>
-              <Link href='#' className='text-gray-600'>
-                Banks
-              </Link>
-            </li>
-            <li>
-              <Link href='#' className='text-gray-600'>
-                Transactions
-              </Link>
-            </li>
-            <li>
-              <Link href='#' className='text-gray-600'>
-                Clients
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <Link href='#' className='text-gray-600 flex items-center gap-2'>
-            <img src={arrowRight} alt='' className='inline-block' />
-            ECommerce
-          </Link>
-        </li>
-        <li>
-          <Link href='#' className='text-gray-600 flex items-center gap-2'>
-            <img src={arrowRight} alt='' className='inline-block' />
-            Education
-          </Link>
-        </li>
-        <li>
-          <Link href='#' className='text-gray-600 flex items-center gap-2'>
-            <img src={arrowRight} alt='' className='inline-block' />
-            Travel
-          </Link>
-        </li>
+        {dataGroups.map((group) => (
+          <li key={group.groupId.toString()}>
+            <Link href={`/project/groups/${group.groupId.toString()}`} className='text-customBlue flex items-center gap-2'>
+              <ChevronDown className='inline-block' />
+              {group.name}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

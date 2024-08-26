@@ -1,32 +1,30 @@
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { CirclePlus } from 'lucide-react';
-import { List } from 'lucide-react';
-import { Input } from '../ui/input';
-import { LayoutGrid } from 'lucide-react';
-import { ListFilter } from 'lucide-react';
-import { Search } from 'lucide-react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import { List, LayoutGrid, ListFilter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
+import { Input } from '../ui/input';
+import { icp } from '../../../../declarations/icp/index';
+import { Project } from '../../../../declarations/icp/icp.did';
 
 export function ProjectsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'project' | 'database'>('project');
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  const projects = [
-    { id: 1, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 2, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 3, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 4, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 5, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 6, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 7, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 8, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 9, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-    { id: 10, name: 'My first project', date: 'Jun, 24 2024 11:42:03', createdBy: 'Joan Nobie', clusters: '0 clusters', users: '6 Users' },
-  ];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const fetchedProjects = await icp.getProjects();
+        setProjects(fetchedProjects);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const openModal = (type: 'project' | 'database') => {
     setModalType(type);
@@ -36,9 +34,15 @@ export function ProjectsTable() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const handleRowClick = () => {
-    window.location.href = '/dashboard/project/groups';
+
+  const handleRowClick = (projectId: bigint) => {
+    window.location.href = `/dashboard/project/groups/${projectId}`;
   };
+
+  const convertToMilliseconds = (bigintValue: any) => {
+    return Number(bigintValue) / 1_000_000;
+  };
+
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
       <div className='flex justify-between items-center'>
@@ -81,21 +85,25 @@ export function ProjectsTable() {
               <TableHead className='p-4'>Project Name</TableHead>
               <TableHead className='p-4'>Date Created</TableHead>
               <TableHead className='p-4'>Created by</TableHead>
-              <TableHead className='p-4'>Databases</TableHead>
-              <TableHead className='p-4'>Users</TableHead>
+              <TableHead className='p-4'>Description</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {projects.map((project) => (
-              <TableRow key={project.id} className='cursor-pointer hover:bg-gray-100' onClick={handleRowClick}>
+              <TableRow
+                key={project.projectId.toString()}
+                className='cursor-pointer hover:bg-gray-100'
+                onClick={() => handleRowClick(project.projectId)}
+              >
                 <TableCell className='p-4'>
                   <input type='checkbox' onClick={(e) => e.stopPropagation()} />
                 </TableCell>
                 <TableCell className='text-customSkyBlue p-4'>{project.name}</TableCell>
-                <TableCell className='text-[#42526d] p-4'>{project.date}</TableCell>
-                <TableCell className='text-[#42526d] p-4'>{project.createdBy}</TableCell>
-                <TableCell className='text-[#42526d] p-4'>{project.clusters}</TableCell>
-                <TableCell className='text-[#42526d] p-4'>{project.users}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>
+                  {new Date(convertToMilliseconds(project.createdAt)).toLocaleString()}
+                </TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.createdBy.toText()}</TableCell>
+                <TableCell className='text-[#42526d] p-4'>{project.description}</TableCell>
               </TableRow>
             ))}
           </TableBody>

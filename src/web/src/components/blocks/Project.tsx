@@ -32,7 +32,7 @@ export function Project() {
         throw new Error('ICP canister is not initialized.');
       }
 
-      const result: Result_5 = await icp.createProject(projectName, projectDescription, Principal.fromText('2vxsx-fae')); 
+      const result: Result_5 = await icp.createProject(projectName, projectDescription, Principal.fromText("w7x7r-cok77-xa")); 
       console.log("result", result);
 
       if ('ok' in result) {

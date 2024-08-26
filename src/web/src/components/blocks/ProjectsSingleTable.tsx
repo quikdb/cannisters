@@ -4,34 +4,15 @@ import { ChevronLeft, ChevronRight, CirclePlus, Trash2 } from 'lucide-react'; //
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { Input } from '../ui/input';
+import { Database } from '../../../../declarations/icp/icp.did';
 
-export function ProjectsSingleTable() {
+interface ProjectsSingleTableProps {
+  databases: Database[];
+}
+
+export function ProjectsSingleTable({ databases }: ProjectsSingleTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'project' | 'database' | 'document'>('document');
-
-  const houses = [
-    {
-      id: '5hgkg57',
-      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
-    },
-    {
-      id: '5hgkg57',
-      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
-    },
-    {
-      id: '5hgkg57',
-      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
-    },
-    {
-      id: '5hgkg57',
-      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
-    },
-    {
-      id: '5hgkg57',
-      document: `{"id":"763937292837", "Location":"New York, NY", "Price":"$850,000", "Year built":"1993"}`,
-    },
-    // Repeat or add more objects as needed
-  ];
 
   const openModal = (type: 'project' | 'database' | 'document') => {
     setModalType(type);
@@ -50,12 +31,12 @@ export function ProjectsSingleTable() {
     <main className='flex flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
       <div className='flex justify-between items-center'>
         <div className='flex flex-col gap-1'>
-          <h2 className='text-lg font-bold md:text-2xl font-nunito'>Houses</h2>
-          <p className='text-sm text-gray-600 mb-4'>Lorem ipsum dolor sit amet consectetur.</p>
+          <h2 className='text-lg font-bold md:text-2xl font-nunito'>Databases</h2>
+          <p className='text-sm text-gray-600 mb-4'>List of databases associated with the project.</p>
         </div>
         <Button
           className='bg-white text-customBlue border hover:bg-customBlue hover:text-white border-customBlue flex gap-2 font-nunito'
-          onClick={() => openModal('document')}
+          onClick={() => openModal('database')}
         >
           <CirclePlus size={16} />
           Insert Document
@@ -66,18 +47,20 @@ export function ProjectsSingleTable() {
         <Table className='border'>
           <TableHeader className='bg-[#fafbfb]'>
             <TableRow>
-              <TableHead className='p-4'>id</TableHead>
-              <TableHead className='p-4'>Document</TableHead>
+              <TableHead className='p-4'>ID</TableHead>
+              <TableHead className='p-4'>Name</TableHead>
+              <TableHead className='p-4'>Created At</TableHead>
               <TableHead className='p-4'></TableHead> {/* Empty header for the delete icon */}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {houses.map((house, index) => (
+            {databases.map((db, index) => (
               <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
-                <TableCell className='p-4 text-customSkyBlue'>{house.id}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{house.document}</TableCell>
+                <TableCell className='p-4 text-customSkyBlue'>{db.databaseId.toString()}</TableCell>
+                <TableCell className='p-4 text-[#42526d]'>{db.name}</TableCell>
+                <TableCell className='p-4 text-[#42526d]'>{new Date(Number(db.createdAt)).toLocaleString()}</TableCell>
                 <TableCell className='p-4 text-right'>
-                  <Button className='bg-transparent hover:bg-red-100 shadow-none  text-red-500'>
+                  <Button className='bg-transparent hover:bg-red-100 shadow-none text-red-500'>
                     <Trash2 size={16} />
                   </Button>
                 </TableCell>
@@ -109,18 +92,18 @@ export function ProjectsSingleTable() {
       <Modal title={modalType === 'project' ? 'Create Project' : 'Create Database'} isOpen={isModalOpen} onClose={closeModal}>
         <form>
           <div className='mb-4'>
-            <label htmlFor='projectName' className='block text-sm font-medium font-nunito text-gray-700'>
-              {modalType === 'project' ? 'Project Name' : 'Database Name'}
+            <label htmlFor='databaseName' className='block text-sm font-medium font-nunito text-gray-700'>
+              Database Name
             </label>
             <Input
-              id='projectName'
+              id='databaseName'
               type='text'
-              placeholder={modalType === 'project' ? 'e.g. My First Project' : 'e.g. My First Database'}
+              placeholder='e.g. My First Database'
               className='border border-gray-300 rounded-md p-2 w-full'
             />
           </div>
           <Button type='submit' className='w-2/5 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
-            {modalType === 'project' ? 'Create Project' : 'Create Database'}
+            Create Database
           </Button>
         </form>
       </Modal>
