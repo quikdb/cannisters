@@ -53,19 +53,24 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     try {
       const createdByString = project.createdBy.toString();
 
-      const result: Result_7 = await icp.createDataGroup(project.projectId, databaseId, BigInt(dataGroups.length + 1), groupName, createdByString);
+      const result: Result_7 = await icp.createDataGroup(
+        project.projectId,
+        databaseId,
+        BigInt(dataGroups.length + 1),
+        groupName,
+        createdByString
+      );
 
       console.log('Create Data Group Result:', result);
 
       if ('ok' in result) {
+        const newGroup = result.ok;
+        setDataGroups((prevGroups) => [...prevGroups, newGroup] as DataGroup[]);
+
         toast.success('Group created successfully!', {
           position: 'top-center',
           autoClose: 3000,
-          onClose: () => window.location.reload() // Reload the page after the toast is closed
         });
-
-        const newGroup = result.ok;
-        setDataGroups((prevGroups) => [...prevGroups, newGroup] as DataGroup[]);
 
         setGroupName('');
         setDatabaseId(BigInt(0));
@@ -118,10 +123,10 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
       {/* Sidebar Navigation */}
       <ul className='space-y-4 text-sm'>
         {dataGroups.map((group) => (
-          <li key={group.groupId.toString()}>
-            <Link href={`/project/groups/${group.groupId.toString()}`} className='text-customBlue flex items-center gap-2'>
+          <li key={group.groupId?.toString() || Math.random().toString()}>
+            <Link href={`/project/groups`} className='text-customBlue flex items-center gap-2'>
               <img src={arrowRight} alt='' />
-              {group.name}
+              {group.name || 'Unnamed Group'}
             </Link>
           </li>
         ))}
