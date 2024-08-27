@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { NavBar, SideBar, ProjectsSingleSideBar, ProjectsSingleTable } from '@/components/blocks';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -13,6 +13,7 @@ export function ProjectSingle() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch project and initial databases once on component mount
     const fetchProjectAndDatabases = async () => {
       try {
         const projects: Project[] = await icp.getProjects();
@@ -22,7 +23,7 @@ export function ProjectSingle() {
           setProject(foundProject);
           const allDatabases: Database[] = await icp.getDatabases();
           const projectDatabases = allDatabases.filter((db) => db.projectId.toString() === projectId);
-          setDatabases(projectDatabases);
+          setDatabases(projectDatabases); // Initial load of databases
         } else {
           setError('Project not found.');
         }
@@ -39,7 +40,12 @@ export function ProjectSingle() {
     };
 
     fetchProjectAndDatabases();
-  }, [projectId]);
+  }, []); // Empty dependency array means this runs only once
+
+  // Callback function to handle database updates
+  const handleDatabaseUpdate = useCallback((newDatabase: Database) => {
+    setDatabases((prevDatabases) => [...prevDatabases, newDatabase]);
+  }, []);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -76,7 +82,7 @@ export function ProjectSingle() {
               <ProjectsSingleTable
                 projectId={project.projectId.toString()}
                 databases={databases}
-                setDatabases={setDatabases}
+                onDatabaseAdd={handleDatabaseUpdate} // Pass callback as prop
               />
             )}
           </div>

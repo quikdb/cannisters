@@ -12,10 +12,10 @@ import { toast } from 'react-toastify';
 interface ProjectsSingleTableProps {
   projectId: string | undefined;
   databases: Database[];
-  setDatabases: React.Dispatch<React.SetStateAction<Database[]>>;
+  onDatabaseAdd: (newDatabase: Database) => void; // Change setDatabases to onDatabaseAdd
 }
 
-export function ProjectsSingleTable({ projectId, databases, setDatabases }: ProjectsSingleTableProps) {
+export function ProjectsSingleTable({ projectId, databases, onDatabaseAdd }: ProjectsSingleTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'project' | 'database'>('database');
   const [databaseName, setDatabaseName] = useState<string>('');
@@ -56,16 +56,29 @@ export function ProjectsSingleTable({ projectId, databases, setDatabases }: Proj
       const result: Result_6 = await icp.createDatabase(projectIdBigInt, dbCountBigInt, databaseName, principalString);
 
       if ('ok' in result) {
-        const newDatabase = result.ok;
-        toast.success('Database created successfully!', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
-        setDatabases((prevDatabases: Database[]) => [...prevDatabases, newDatabase] as Database[]);
+        // Assume result.ok is an array and access the first element
+        const newDatabaseArray = result.ok;
+        const newDatabase = Array.isArray(newDatabaseArray) && newDatabaseArray.length > 0 ? newDatabaseArray[0] : null;
 
-        setDatabaseName('');
-        setDatabaseCount(1);
-        closeModal();
+        if (newDatabase) {
+          console.log('New Database:', newDatabase);
+
+          // Call the callback function to pass the new database to the parent
+          onDatabaseAdd(newDatabase);
+          toast.success('Database created successfully!', {
+            position: 'top-center',
+            autoClose: 3000,
+          });
+
+          setDatabaseName('');
+          setDatabaseCount(1);
+          closeModal();
+        } else {
+          toast.error('No valid database returned from the server.', {
+            position: 'top-center',
+            autoClose: 5000,
+          });
+        }
       } else if ('err' in result) {
         const error = result.err as QuikDBError;
         toast.error(`Error: ${error}`, {
@@ -106,18 +119,20 @@ export function ProjectsSingleTable({ projectId, databases, setDatabases }: Proj
               <TableHead className='p-4'>Name</TableHead>
               <TableHead className='p-4'>Created At</TableHead>
               <TableHead className='p-4'>Created By</TableHead>
-              <TableHead className='p-4'>ProjectID</TableHead>
+              {/* <TableHead className='p-4'>ProjectID</TableHead> */}
               <TableHead className='p-4'></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {databases.map((db, index) => (
               <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
-                <TableCell className='p-4 text-customSkyBlue'>{db.databaseId.toString()}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{db.name}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{new Date(Number(db.createdAt) / 1_000_000).toLocaleString()}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{String(db.createdBy)}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{db.projectId.toString()}</TableCell>
+                <TableCell className='p-4 text-customSkyBlue'>{db.databaseId ? db.databaseId.toString() : 'N/A'}</TableCell>
+                <TableCell className='p-4 text-[#42526d]'>{db.name || 'No Name'}</TableCell>
+                <TableCell className='p-4 text-[#42526d]'>
+                  {db.createdAt ? new Date(Number(db.createdAt) / 1_000_000).toLocaleString() : 'Unknown Date'}
+                </TableCell>
+                <TableCell className='p-4 text-[#42526d]'>{db.createdBy ? db.createdBy.toString() : 'Unknown Creator'}</TableCell>
+                {/* <TableCell className='p-4 text-[#42526d]'>{db.projectId ? db.projectId.toString() : 'Unknown Project'}</TableCell> */}
                 <TableCell className='p-4 text-right'>
                   <Button className='bg-transparent hover:bg-red-100 shadow-none text-red-500'>
                     <Trash2 size={16} />

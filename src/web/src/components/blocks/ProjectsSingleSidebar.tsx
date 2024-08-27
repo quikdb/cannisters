@@ -1,4 +1,4 @@
-import { ChevronDown, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,14 @@ import { DataGroup, Project, Result_7, QuikDBError } from '../../../../declarati
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal } from '../blocks/Modal';
-import { Principal } from '@dfinity/principal';
+import arrowRight from '../../images/arrow-right.svg';
 
 export function ProjectsSingleSideBar({ project }: { project: Project | null }) {
   const [dataGroups, setDataGroups] = useState<DataGroup[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [groupName, setGroupName] = useState<string>('');
   const [databaseId, setDatabaseId] = useState<bigint>(BigInt(0));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'project' | 'group'>('group');
 
   useEffect(() => {
     const fetchDataGroups = async () => {
@@ -29,8 +30,9 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     fetchDataGroups();
   }, []);
 
-  const openModal = () => {
-    console.log('Opening modal'); // Add this line for debugging
+  const openModal = (type: 'project' | 'group') => {
+    console.log('Open Modal:', type);
+    setModalType(type);
     setIsModalOpen(true);
   };
 
@@ -51,13 +53,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     try {
       const createdByString = project.createdBy.toString();
 
-      const result: Result_7 = await icp.createDataGroup(
-        project.projectId,
-        databaseId,
-        BigInt(dataGroups.length + 1), 
-        groupName,
-        createdByString 
-      );
+      const result: Result_7 = await icp.createDataGroup(project.projectId, databaseId, BigInt(dataGroups.length + 1), groupName, createdByString);
 
       console.log('Create Data Group Result:', result);
 
@@ -65,6 +61,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
         toast.success('Group created successfully!', {
           position: 'top-center',
           autoClose: 3000,
+          onClose: () => window.location.reload() // Reload the page after the toast is closed
         });
 
         const newGroup = result.ok;
@@ -96,8 +93,11 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
       {/* Create Group Button */}
       <div>
         <Button
-          className='w-full border bg-customBlue text-white hover:bg-white hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2'
-          onClick={() => openModal()}
+          className='w-full border bg-customBlue text-white hover:bg-white hover:border-customBlue hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2 relative z-10'
+          onClick={() => {
+            console.log('Create Group button clicked'); // Debug log
+            openModal('group');
+          }}
         >
           <span className='text-sm'>Create Group</span>
         </Button>
@@ -120,7 +120,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
         {dataGroups.map((group) => (
           <li key={group.groupId.toString()}>
             <Link href={`/project/groups/${group.groupId.toString()}`} className='text-customBlue flex items-center gap-2'>
-              <ChevronDown className='inline-block' />
+              <img src={arrowRight} alt='' />
               {group.name}
             </Link>
           </li>
@@ -128,7 +128,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
       </ul>
 
       {/* Modal for creating a new group */}
-      <Modal title='Create Group' isOpen={isModalOpen} onClose={closeModal}>
+      <Modal title={modalType === 'project' ? 'Create Project' : 'Create Group'} isOpen={isModalOpen} onClose={closeModal}>
         <form onSubmit={handleCreateGroup}>
           <div className='mb-4'>
             <label htmlFor='groupName' className='block text-sm font-medium font-nunito text-gray-700'>
@@ -156,8 +156,8 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
               className='border border-gray-300 rounded-md p-2 w-full'
             />
           </div>
-          <Button type='submit' className='w-full bg-customBlue text-white font-medium font-nunito py-2 rounded-md'>
-            Create Group
+          <Button type='submit' className='w-2/5 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
+            {modalType === 'project' ? 'Create Project' : 'Create Group'}
           </Button>
         </form>
       </Modal>
