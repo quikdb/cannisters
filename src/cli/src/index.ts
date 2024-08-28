@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "../icpClient.ts";
+import { createProject, listProjects, updateProject, createDatabase, listDatabases, updateDatabase, createDataGroup, listDataGroups, updateDataGroup, createItem, listItems, updateItem, batchWriteItems, batchGetItems } from "./client/icp.ts";
 import dotenv from 'dotenv';
 dotenv.config();
 
