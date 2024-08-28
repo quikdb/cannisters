@@ -5,6 +5,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { icp } from '../../../../../declarations/icp';
 import { Project, QuikDBError, Database } from '../../../../../declarations/icp/icp.did';
+import { ProjectsSingleDocumentTable } from '@/components/blocks/ProjectSingleDocument';
 
 export function ProjectSingle() {
   const { projectId } = useParams();
@@ -79,10 +80,9 @@ export function ProjectSingle() {
 
             {/* Projects Table or Placeholder */}
             {project && (
-              <ProjectsSingleTable
-                projectId={project.projectId.toString()}
-                databases={databases}
-                onDatabaseAdd={handleDatabaseUpdate} // Pass callback as prop
+              <ProjectsSingleDocumentTable
+              
+                
               />
             )}
           </div>
