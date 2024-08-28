@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "dfx:start": "dfx start --clean",
+    "dfx:setup:prod": "dfx canister --network ic create web && dfx canister --network ic create icp && dfx canister --network ic create internet_identity",
     "dfx:setup": "dfx canister create web && dfx canister create icp && dfx canister create internet_identity",
     "dfx:build": "dfx build && dfx deploy",
     "prebuild": "npm run prebuild --workspaces --if-present",
