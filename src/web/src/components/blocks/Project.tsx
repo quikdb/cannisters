@@ -41,7 +41,7 @@ export function Project() {
           position: 'top-center',
           autoClose: 3000,
         });
-        navigate('/dashboard/project/list');
+        navigate('/project/list');
       } else if ('err' in result) {
         const error = result.err as QuikDBError;
 

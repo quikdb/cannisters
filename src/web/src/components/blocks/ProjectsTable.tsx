@@ -36,7 +36,7 @@ export function ProjectsTable() {
   };
 
   const handleRowClick = (projectId: bigint) => {
-    window.location.href = `/dashboard/project/groups/${projectId}`;
+    window.location.href = `/project/groups/${projectId}`;
   };
 
   const convertToMilliseconds = (bigintValue: any) => {

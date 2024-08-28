@@ -20,9 +20,9 @@ export function SideBar() {
         <div className='flex-1'>
           <nav className='grid items-start px-2 text-sm font-medium lg:px-4'>
             <Link
-              to='/dashboard/home'
+              to='/'
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                location.pathname === '/dashboard/home'
+                location.pathname === '/'
                   ? 'bg-muted text-customBlue'
                   : 'text-muted-foreground hover:text-customBlue text-customBlue'
               } font-nunito`}
@@ -31,9 +31,9 @@ export function SideBar() {
               Overview
             </Link>
             <Link
-              to='/dashboard/project'
+              to='/project'
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                location.pathname.startsWith('/dashboard/project')
+                location.pathname.startsWith('/project')
                   ? 'bg-muted text-customBlue'
                   : 'text-muted-foreground hover:text-customBlue text-customBlue'
               } font-nunito`}
