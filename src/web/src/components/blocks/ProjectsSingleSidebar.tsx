@@ -4,18 +4,21 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, FormEvent } from 'react';
 import { icp } from '../../../../declarations/icp/index';
-import { DataGroup, Project, Result_7, QuikDBError } from '../../../../declarations/icp/icp.did';
+import { DataGroup, Project, Result_6, Result_7, QuikDBError, Database } from '../../../../declarations/icp/icp.did';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal } from '../blocks/Modal';
 import arrowRight from '../../images/arrow-right.svg';
+import arrowDown from '../../images/arrow-down.svg';
 
 export function ProjectsSingleSideBar({ project }: { project: Project | null }) {
   const [dataGroups, setDataGroups] = useState<DataGroup[]>([]);
+  const [databases, setDatabases] = useState<Database[]>([]);
+  const [databaseName, setDatabaseName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
-  const [databaseId, setDatabaseId] = useState<bigint>(BigInt(0));
+  const [selectedDatabaseId, setSelectedDatabaseId] = useState<bigint | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'project' | 'group'>('group');
+  const [modalType, setModalType] = useState<'database' | 'group'>('database');
 
   useEffect(() => {
     const fetchDataGroups = async () => {
@@ -27,20 +30,32 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
       }
     };
 
+    const fetchDatabases = async () => {
+      try {
+        const result: Database[] = await icp.getDatabases();
+        setDatabases(result);
+      } catch (error) {
+        console.error('Failed to fetch databases:', error);
+      }
+    };
+
     fetchDataGroups();
+    fetchDatabases();
   }, []);
 
-  const openModal = (type: 'project' | 'group') => {
-    console.log('Open Modal:', type);
+  const openModal = (type: 'database' | 'group', databaseId?: bigint) => {
     setModalType(type);
+    setSelectedDatabaseId(databaseId || null);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setDatabaseName('');
+    setGroupName('');
   };
 
-  const handleCreateGroup = async (event: FormEvent<HTMLFormElement>) => {
+  const handleCreateDatabase = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!project) {
       toast.error('Project not initialized!', {
@@ -53,15 +68,61 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
     try {
       const createdByString = project.createdBy.toString();
 
+      const result: Result_6 = await icp.createDatabase(
+        project.projectId,
+        BigInt(databases.length + 1),
+        databaseName,
+        createdByString
+      );
+
+      if ('ok' in result) {
+        const newDatabase = result.ok[0];
+        setDatabases((prevDatabases) => [...prevDatabases, newDatabase].filter((db) => db !== undefined) as Database[]);
+
+        toast.success('Database created successfully!', {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+
+        closeModal();
+      } else if ('err' in result) {
+        const error = result.err as QuikDBError;
+        const errorMessage =
+          'GeneralError' in error ? error.GeneralError : 'ValidationError' in error ? error.ValidationError : 'Error creating database.';
+        toast.error(`Error: ${errorMessage}`, {
+          position: 'top-center',
+          autoClose: 5000,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error creating database:', error);
+      toast.error(`Unexpected Error: ${error.message}`, {
+        position: 'top-center',
+        autoClose: 5000,
+      });
+    }
+  };
+
+  const handleCreateGroup = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!project || selectedDatabaseId === null) {
+      toast.error('Project or Database not initialized!', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      const createdByString = project.createdBy.toString();
+
       const result: Result_7 = await icp.createDataGroup(
         project.projectId,
-        databaseId,
+        selectedDatabaseId,
         BigInt(dataGroups.length + 1),
         groupName,
         createdByString
       );
-
-      console.log('Create Data Group Result:', result);
 
       if ('ok' in result) {
         const newGroup = result.ok;
@@ -72,8 +133,6 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
           autoClose: 3000,
         });
 
-        setGroupName('');
-        setDatabaseId(BigInt(0));
         closeModal();
       } else if ('err' in result) {
         const error = result.err as QuikDBError;
@@ -95,16 +154,13 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
 
   return (
     <div className='border-r p-4'>
-      {/* Create Group Button */}
-      <div>
+      {/* Create Database Button */}
+      <div className='mb-4'>
         <Button
-          className='w-full border bg-customBlue text-white hover:bg-white hover:border-customBlue hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2 relative z-10'
-          onClick={() => {
-            console.log('Create Group button clicked'); // Debug log
-            openModal('group');
-          }}
+          className='w-full border bg-customBlue text-white hover:bg-white hover:border-customBlue hover:text-customBlue shadow-none font-nunito flex items-center justify-center gap-2 relative z-10 text-sm'
+          onClick={() => openModal('database')}
         >
-          <span className='text-sm'>Create Group</span>
+          <span className='text-sm'>Create Database</span>
         </Button>
       </div>
 
@@ -114,55 +170,78 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
           <Search size={16} className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500' />
           <Input
             type='text'
-            placeholder='Search by DB name....'
+            placeholder='Search by DB name...'
             className='pl-10 py-2 text-xs font-nunito border border-gray-300 rounded-md w-full'
           />
         </div>
       </div>
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation for Databases and Groups */}
       <ul className='space-y-4 text-sm'>
-        {dataGroups.map((group) => (
-          <li key={group.groupId?.toString() || Math.random().toString()}>
-            <Link href={`/project/groups`} className='text-customBlue flex items-center gap-2'>
-              <img src={arrowRight} alt='' />
-              {group.name || 'Unnamed Group'}
-            </Link>
+        {databases.map((db) => (
+          <li key={db.databaseId.toString()} className='mb-2'>
+            <div className='flex items-center justify-between'>
+              <Link href={`/project/databases/${db.databaseId}`} className='text-customBlue flex items-center gap-2'>
+                <img src={arrowRight} alt='' />
+                {db.name || 'Unnamed Database'}
+              </Link>
+              <Button
+                className='text-xs bg-transparent text-customBlue hover:underline'
+                onClick={() => openModal('group', db.databaseId)}
+              >
+                +
+              </Button>
+            </div>
+            <ul className='pl-4 mt-2'>
+              {dataGroups
+                .filter((group) => group.databaseId === db.databaseId)
+                .map((group) => (
+                  <li key={group.groupId.toString()} className='pl-4'>
+                    <Link href={`/project/groups`} className='text-gray-600 flex items-center gap-2'>
+                      <img src={arrowRight} alt='' />
+                      {group.name || 'Unnamed Group'}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
           </li>
         ))}
       </ul>
 
-      {/* Modal for creating a new group */}
-      <Modal title={modalType === 'project' ? 'Create Project' : 'Create Group'} isOpen={isModalOpen} onClose={closeModal}>
-        <form onSubmit={handleCreateGroup}>
-          <div className='mb-4'>
-            <label htmlFor='groupName' className='block text-sm font-medium font-nunito text-gray-700'>
-              Group Name
-            </label>
-            <Input
-              id='groupName'
-              type='text'
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
-              placeholder='e.g. My First Group'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <div className='mb-4'>
-            <label htmlFor='databaseId' className='block text-sm font-medium font-nunito text-gray-700'>
-              Database ID
-            </label>
-            <Input
-              id='databaseId'
-              type='number'
-              value={Number(databaseId)}
-              onChange={(e) => setDatabaseId(BigInt(e.target.value))}
-              placeholder='e.g. 1'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <Button type='submit' className='w-2/5 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
-            {modalType === 'project' ? 'Create Project' : 'Create Group'}
+      {/* Modal for creating a new database or group */}
+      <Modal title={modalType === 'database' ? 'Create Database' : 'Create Group'} isOpen={isModalOpen} onClose={closeModal}>
+        <form onSubmit={modalType === 'database' ? handleCreateDatabase : handleCreateGroup}>
+          {modalType === 'database' ? (
+            <div className='mb-4'>
+              <label htmlFor='databaseName' className='block text-sm font-medium font-nunito text-gray-700'>
+                Database Name
+              </label>
+              <Input
+                id='databaseName'
+                type='text'
+                value={databaseName}
+                onChange={(e) => setDatabaseName(e.target.value)}
+                placeholder='e.g. My First Database'
+                className='border border-gray-300 rounded-md p-2 w-full'
+              />
+            </div>
+          ) : (
+            <div className='mb-4'>
+              <label htmlFor='groupName' className='block text-sm font-medium font-nunito text-gray-700'>
+                Group Name
+              </label>
+              <Input
+                id='groupName'
+                type='text'
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                placeholder='e.g. My First Group'
+                className='border border-gray-300 rounded-md p-2 w-full'
+              />
+            </div>
+          )}
+          <Button type='submit' className='w-full mt-4 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
+            {modalType === 'database' ? 'Create Database' : 'Create Group'}
           </Button>
         </form>
       </Modal>
