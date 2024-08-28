@@ -42,7 +42,7 @@ export function SideBar() {
               Projects
               {/* <Badge className='ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full'>6</Badge> */}
             </Link>
-            <Link
+            {/* <Link
               to='/dashboard/user-management'
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                 location.pathname === '/dashboard/user-management'
@@ -74,7 +74,7 @@ export function SideBar() {
             >
               <img src={settingsIcon} alt='settings' className='w-6 h-6' />
               Settings
-            </Link>
+            </Link> */}
           </nav>
         </div>
       </div>
