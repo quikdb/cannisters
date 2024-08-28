@@ -41,7 +41,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
 
     fetchDataGroups();
     fetchDatabases();
-  }, [] );
+  }, []);
 
   const openModal = (type: 'database' | 'group', databaseId?: bigint) => {
     setModalType(type);
@@ -176,37 +176,43 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
         </div>
       </div>
 
-      {/* Sidebar Navigation for Databases and Groups */}
-      <ul className='space-y-4 text-sm'>
-        {databases.map((db) => (
-          <li key={db.databaseId.toString()} className='mb-2'>
-            <div className='flex items-center justify-between'>
-              <Link href={`/project/databases/${db.databaseId}`} className='text-customBlue flex items-center gap-2'>
+      {/* Sidebar Navigation for Databases */}
+      <div className='space-y-4 text-sm'>
+        <h3 className='font-light'>Databases</h3>
+        <ul>
+          {databases.map((db) => (
+            <li key={db.databaseId.toString()} className='mb-2'>
+              <div className='flex items-center justify-between'>
+                <Link href={`/project/databases/${db.databaseId}`} className='text-customBlue flex items-center gap-2'>
+                  <img src={arrowRight} alt='' />
+                  {db.name || 'Unnamed Database'}
+                </Link>
+                <Button
+                  className='text-xs bg-transparent border border-customBlue text-customBlue hover:bg-customBlue hover:text-white z-10'
+                  onClick={() => openModal('group', db.databaseId)}
+                >
+                  + Create Group
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Sidebar Navigation for Data Groups */}
+      <div className='space-y-4 text-sm mt-2'>
+        <h3 className='font-light'>Data Groups</h3>
+        <ul>
+          {dataGroups.map((group) => (
+            <li key={group.groupId.toString()} className='pl-2'>
+              <Link href={`/project/groups/${group.groupId}`} className='text-gray-600 flex items-center gap-2'>
                 <img src={arrowRight} alt='' />
-                {db.name || 'Unnamed Database'}
+                {group.name || 'Unnamed Group'}
               </Link>
-              <Button
-                className='text-xs bg-transparent text-customBlue hover:underline'
-                onClick={() => openModal('group', db.databaseId)}
-              >
-                +
-              </Button>
-            </div>
-            <ul className='pl-4 mt-2'>
-              {dataGroups
-                .filter((group) => group.databaseId === db.databaseId)
-                .map((group) => (
-                  <li key={group.groupId.toString()} className='pl-4'>
-                    <Link href={`/project/groups/${group.groupId}`} className='text-gray-600 flex items-center gap-2'>
-                      <img src={arrowRight} alt='' />
-                      {group.name || 'Unnamed Group'}
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Modal for creating a new database or group */}
       <Modal title={modalType === 'database' ? 'Create Database' : 'Create Group'} isOpen={isModalOpen} onClose={closeModal}>
