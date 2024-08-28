@@ -1,6 +1,6 @@
 import { HttpAgent, Actor } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
-import { idlFactory as quikdb_idl } from '../declarations/icp';
+import { idlFactory as quikdb_idl } from '../../../declarations/icp';
 import dotenv from 'dotenv';
 dotenv.config();
 
