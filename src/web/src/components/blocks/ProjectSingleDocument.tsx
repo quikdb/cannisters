@@ -5,17 +5,12 @@ import { CirclePlus, Trash2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { Input } from '../ui/input';
 import { icp } from '../../../../declarations/icp'; // Assuming icp is imported from declarations
-import { Item, Result_3, Result_4, QuikDBError } from '../../../../declarations/icp/icp.did';
+import { Item, Result_3, QuikDBError } from '../../../../declarations/icp/icp.did';
 import { toast } from 'react-toastify';
 
 export function ProjectsSingleDocumentTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [documentData, setDocumentData] = useState({
-    id: '',
-    location: '',
-    price: '',
-    yearBuilt: '',
-  });
+  const [fields, setFields] = useState([{ key: 'location', value: '' }, { key: 'price', value: '' }, { key: 'yearBuilt', value: '' }]);
   const [documents, setDocuments] = useState<Item[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5; // Adjust as necessary
@@ -52,24 +47,38 @@ export function ProjectsSingleDocumentTable() {
     setIsModalOpen(false);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setDocumentData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFields = [...fields];
+    newFields[index].value = event.target.value;
+    setFields(newFields);
+  };
+
+  const handleAddField = () => {
+    setFields([...fields, { key: '', value: '' }]);
+  };
+
+  const handleRemoveField = (index: number) => {
+    const newFields = fields.filter((_, i) => i !== index);
+    setFields(newFields);
+  };
+
+  const handleFieldKeyChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFields = [...fields];
+    newFields[index].key = event.target.value;
+    setFields(newFields);
   };
 
   const handleCreateDocument = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      const key = `doc_${Date.now()}`; // Unique key for the document
-      const documentString = JSON.stringify(documentData); // Create a JSON string from input data
+      const id = `doc_${Date.now()}`; // Automatically generate unique ID
+      const documentData = Object.fromEntries(fields.map(field => [field.key, field.value])); // Create object from user-defined fields
+      const documentString = JSON.stringify({ id, ...documentData }); // Create a JSON string
       const encoder = new TextEncoder(); // Use TextEncoder to encode the document content
       const value = encoder.encode(documentString); // Convert the document content to Uint8Array
 
-      const result: Result_3 = await icp.putItem(key, value);
+      const result: Result_3 = await icp.putItem(id, value);
 
       if ('ok' in result) {
         toast.success('Document created successfully!', {
@@ -77,16 +86,11 @@ export function ProjectsSingleDocumentTable() {
           autoClose: 3000,
         });
 
-        const newDocument: Item = { key, value, createdAt: BigInt(Date.now()), updatedAt: BigInt(Date.now()) };
+        const newDocument: Item = { key: id, value, createdAt: BigInt(Date.now()), updatedAt: BigInt(Date.now()) };
         setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
 
-        // Reset input fields
-        setDocumentData({
-          id: '',
-          location: '',
-          price: '',
-          yearBuilt: '',
-        });
+        // Reset fields
+        setFields([{ key: 'location', value: '' }, { key: 'price', value: '' }, { key: 'yearBuilt', value: '' }]);
 
         closeModal();
       } else if ('err' in result) {
@@ -100,6 +104,36 @@ export function ProjectsSingleDocumentTable() {
       }
     } catch (error: any) {
       console.error('Error creating document:', error);
+      toast.error(`Unexpected Error: ${error.message}`, {
+        position: 'top-center',
+        autoClose: 5000,
+      });
+    }
+  };
+
+  const handleDeleteDocument = async (key: string) => {
+    try {
+      const result: Result_3 = await icp.deleteItem(key);
+
+      if ('ok' in result) {
+        toast.success('Document deleted successfully!', {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+
+        // Update state to remove the deleted document
+        setDocuments((prevDocuments) => prevDocuments.filter(doc => doc.key !== key));
+      } else if ('err' in result) {
+        const error = result.err as QuikDBError;
+        const errorMessage =
+          'GeneralError' in error ? error.GeneralError : 'ItemNotFound' in error ? error.ItemNotFound : 'Error deleting document.';
+        toast.error(`Error: ${errorMessage}`, {
+          position: 'top-center',
+          autoClose: 5000,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error deleting document:', error);
       toast.error(`Unexpected Error: ${error.message}`, {
         position: 'top-center',
         autoClose: 5000,
@@ -126,7 +160,7 @@ export function ProjectsSingleDocumentTable() {
   };
 
   return (
-    <main className='flex flex-col gap-4 p-4 lg:gap-6 lg:p-6'>
+    <main className='flex flex-col gap-4 p-4 lg:gap-6 lg:p-6 max-w-full overflow-hidden'>
       <div className='flex justify-between items-center'>
         <div className='flex flex-col gap-1'>
           <h2 className='text-lg font-bold md:text-2xl font-nunito'>Documents</h2>
@@ -141,8 +175,8 @@ export function ProjectsSingleDocumentTable() {
         </Button>
       </div>
 
-      <div className='flex flex-col overflow-x-auto'>
-        <Table className='border'>
+      <div className='flex flex-col '>
+        <Table className='w-full border'>
           <TableHeader className='bg-[#fafbfb]'>
             <TableRow>
               <TableHead className='p-4'>id</TableHead>
@@ -154,9 +188,12 @@ export function ProjectsSingleDocumentTable() {
             {paginatedDocuments.map((doc, index) => (
               <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
                 <TableCell className='p-4 text-customSkyBlue'>{doc.key}</TableCell>
-                <TableCell className='p-4 text-[#42526d]'>{new TextDecoder().decode(new Uint8Array(doc.value))}</TableCell>
+                <TableCell className='p-4 text-[#42526d] whitespace-normal break-words w-1/2'>{new TextDecoder().decode((doc.value as Uint8Array).buffer)}</TableCell>
                 <TableCell className='p-4 text-right'>
-                  <Button className='bg-transparent hover:bg-red-100 shadow-none text-red-500'>
+                  <Button
+                    className='bg-transparent hover:bg-red-100 shadow-none text-red-500'
+                    onClick={() => handleDeleteDocument(doc.key)}
+                  >
                     <Trash2 size={16} />
                   </Button>
                 </TableCell>
@@ -189,63 +226,48 @@ export function ProjectsSingleDocumentTable() {
 
       <Modal title='Insert Document' isOpen={isModalOpen} onClose={closeModal}>
         <form onSubmit={handleCreateDocument}>
-          <div className='mb-4'>
-            <label htmlFor='id' className='block text-sm font-medium font-nunito text-gray-700'>
-              ID
-            </label>
-            <Input
-              id='id'
-              name='id'
-              type='text'
-              value={documentData.id}
-              onChange={handleInputChange}
-              placeholder='e.g. 763937292837'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <div className='mb-4'>
-            <label htmlFor='location' className='block text-sm font-medium font-nunito text-gray-700'>
-              Location
-            </label>
-            <Input
-              id='location'
-              name='location'
-              type='text'
-              value={documentData.location}
-              onChange={handleInputChange}
-              placeholder='e.g. New York, NY'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <div className='mb-4'>
-            <label htmlFor='price' className='block text-sm font-medium font-nunito text-gray-700'>
-              Price
-            </label>
-            <Input
-              id='price'
-              name='price'
-              type='text'
-              value={documentData.price}
-              onChange={handleInputChange}
-              placeholder='e.g. 850,000'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <div className='mb-4'>
-            <label htmlFor='yearBuilt' className='block text-sm font-medium font-nunito text-gray-700'>
-              Year Built
-            </label>
-            <Input
-              id='yearBuilt'
-              name='yearBuilt'
-              type='text'
-              value={documentData.yearBuilt}
-              onChange={handleInputChange}
-              placeholder='e.g. 1993'
-              className='border border-gray-300 rounded-md p-2 w-full'
-            />
-          </div>
-          <Button type='submit' className='w-2/5 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
+          {fields.map((field, index) => (
+            <div className='mb-4' key={index}>
+              <label htmlFor={`field_${index}`} className='block text-sm font-medium font-nunito text-gray-700'>
+                {field.key || `Field ${index + 1}`}
+              </label>
+              <div className='flex'>
+                <Input
+                  id={`key_${index}`}
+                  name={`key_${index}`}
+                  type='text'
+                  value={field.key}
+                  onChange={(e) => handleFieldKeyChange(index, e)}
+                  placeholder='Key'
+                  className='border border-gray-300 rounded-md p-2 w-1/2 mr-2'
+                />
+                <Input
+                  id={`value_${index}`}
+                  name={`value_${index}`}
+                  type='text'
+                  value={field.value}
+                  onChange={(e) => handleInputChange(index, e)}
+                  placeholder='Value'
+                  className='border border-gray-300 rounded-md p-2 w-1/2'
+                />
+                <Button
+                  className='bg-transparent text-red-500 ml-2'
+                  onClick={() => handleRemoveField(index)}
+                  type='button'
+                >
+                  <Trash2 size={16} />
+                </Button>
+              </div>
+            </div>
+          ))}
+          <Button
+            className='w-full bg-gray-200 text-customBlue font-medium font-nunito py-2 rounded-md transition-all hover:bg-gray-300'
+            onClick={handleAddField}
+            type='button'
+          >
+            Add Field
+          </Button>
+          <Button type='submit' className='w-full mt-4 bg-gray-400 text-white font-medium font-nunito py-2 rounded-md transition-all hover:bg-customBlue'>
             Create Document
           </Button>
         </form>

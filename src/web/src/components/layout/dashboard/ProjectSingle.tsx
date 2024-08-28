@@ -79,12 +79,7 @@ export function ProjectSingle() {
             <ProjectsSingleSideBar project={project} />
 
             {/* Projects Table or Placeholder */}
-            {project && (
-              <ProjectsSingleDocumentTable
-              
-                
-              />
-            )}
+            {project && <ProjectsSingleDocumentTable />}
           </div>
         </div>
       </div>
