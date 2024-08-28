@@ -175,33 +175,36 @@ export function ProjectsSingleDocumentTable() {
         </Button>
       </div>
 
-      <div className='flex flex-col '>
-        <Table className='w-full border'>
-          <TableHeader className='bg-[#fafbfb]'>
-            <TableRow>
-              <TableHead className='p-4'>id</TableHead>
-              <TableHead className='p-4'>Document</TableHead>
-              <TableHead className='p-4'></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedDocuments.map((doc, index) => (
-              <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
-                <TableCell className='p-4 text-customSkyBlue'>{doc.key}</TableCell>
-                <TableCell className='p-4 text-[#42526d] whitespace-normal break-words w-1/2'>{new TextDecoder().decode((doc.value as Uint8Array).buffer)}</TableCell>
-                <TableCell className='p-4 text-right'>
-                  <Button
-                    className='bg-transparent hover:bg-red-100 shadow-none text-red-500'
-                    onClick={() => handleDeleteDocument(doc.key)}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <div className='flex flex-col'>
+  <Table className='w-full border'>
+    <TableHeader className='bg-[#fafbfb]'>
+      <TableRow>
+        <TableHead className='p-4'>id</TableHead>
+        <TableHead className='p-4'>Document</TableHead>
+        <TableHead className='p-4'></TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {paginatedDocuments.map((doc, index) => (
+        <TableRow key={index} className='hover:bg-gray-100 cursor-pointer'>
+          <TableCell className='p-4 text-customSkyBlue'>{doc.key}</TableCell>
+          <TableCell className='p-4 text-[#42526d] whitespace-normal break-words max-w-md'>
+            {new TextDecoder().decode((doc.value as Uint8Array).buffer)}
+          </TableCell>
+          <TableCell className='p-4 text-right'>
+            <Button
+              className='bg-transparent hover:bg-red-100 shadow-none text-red-500'
+              onClick={() => handleDeleteDocument(doc.key)}
+            >
+              <Trash2 size={16} />
+            </Button>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</div>
+
 
       {/* Pagination Controls */}
       <div className='flex justify-between items-center'>

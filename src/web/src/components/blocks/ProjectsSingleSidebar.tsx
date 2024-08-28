@@ -41,7 +41,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
 
     fetchDataGroups();
     fetchDatabases();
-  }, []);
+  }, [] );
 
   const openModal = (type: 'database' | 'group', databaseId?: bigint) => {
     setModalType(type);
@@ -125,8 +125,8 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
       );
 
       if ('ok' in result) {
-        const newGroup = result.ok;
-        setDataGroups((prevGroups) => [...prevGroups, newGroup] as DataGroup[]);
+        const newGroup = result.ok[0]; // Assuming result.ok is an array
+        setDataGroups((prevGroups) => [...prevGroups, newGroup].filter((group) => group !== undefined) as DataGroup[]);
 
         toast.success('Group created successfully!', {
           position: 'top-center',
@@ -197,7 +197,7 @@ export function ProjectsSingleSideBar({ project }: { project: Project | null }) 
                 .filter((group) => group.databaseId === db.databaseId)
                 .map((group) => (
                   <li key={group.groupId.toString()} className='pl-4'>
-                    <Link href={`/project/groups`} className='text-gray-600 flex items-center gap-2'>
+                    <Link href={`/project/groups/${group.groupId}`} className='text-gray-600 flex items-center gap-2'>
                       <img src={arrowRight} alt='' />
                       {group.name || 'Unnamed Group'}
                     </Link>
