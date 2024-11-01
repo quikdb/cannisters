@@ -132,7 +132,7 @@ The QuikDB CLI provides a convenient way to manage projects, databases, data gro
 
 1. **Navigate to CLI Directory**: Move into the CLI directory of the project.
     ```bash
-    cd cli/
+    cd src/cli
     ```
 
 2. **No Need to Run `npm install`**: Dependencies are already managed by the project setup.
@@ -162,52 +162,6 @@ The CLI supports various commands for managing projects, databases, data groups,
     ```
     Lists all projects currently managed by QuikDB.
 
-- **Update a Project**:
-    ```bash
-    npx tsx src/index.ts update-project --id 1 --name "Updated Name" --description "Updated Description"
-    ```
-    Updates the name and description of an existing project.
-
-#### Database Commands
-
-- **Create a Database**:
-    ```bash
-    npx tsx src/index.ts create-database --name "Database Name" --project-id 1
-    ```
-    Creates a new database associated with a specific project.
-
-- **List All Databases**:
-    ```bash
-    npx tsx src/index.ts list-databases
-    ```
-    Lists all databases managed by QuikDB.
-
-- **Update a Database**:
-    ```bash
-    npx tsx src/index.ts update-database --id 1 --name "Updated Database Name"
-    ```
-    Updates the name of an existing database.
-
-#### Data Group Commands
-
-- **Create a Data Group**:
-    ```bash
-    npx tsx src/index.ts create-data-group --name "Data Group Name" --database-id 1 --project-id 1
-    ```
-    Creates a new data group within a specific database and project.
-
-- **List All Data Groups**:
-    ```bash
-    npx tsx src/index.ts list-data-groups
-    ```
-    Lists all data groups managed by QuikDB.
-
-- **Update a Data Group**:
-    ```bash
-    npx tsx src/index.ts update-data-group --id 1 --name "Updated Data Group Name"
-    ```
-    Updates the name of an existing data group.
-
 #### Item Commands
 
 - **Create an Item**:
@@ -227,20 +181,6 @@ The CLI supports various commands for managing projects, databases, data groups,
     npx tsx src/index.ts update-item --key "ItemKey" --value "NewItemValue"
     ```
     Updates the value of an existing item identified by its key.
-
-#### Batch Operations
-
-- **Batch Write Items**:
-    ```bash
-    npx tsx src/index.ts batch-write-items --items "key1=value1" "key2=value2"
-    ```
-    Adds or updates multiple items in one go.
-
-- **Batch Get Items**:
-    ```bash
-    npx tsx src/index.ts batch-get-items --keys "key1" "key2"
-    ```
-    Retrieves multiple items identified by their keys.
 
 ## Conclusion
 
