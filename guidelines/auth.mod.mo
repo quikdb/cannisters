@@ -35,4 +35,30 @@ module Authentication {
         return null;
     };
 
+        // Ends the user's session by invalidating their token.
+    public func logout(): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Invalidate the current session/token.
+        // 3. Remove session data from storage.
+    };
+
+        // Retrieves a list of active sessions for the user.
+    public func getActiveSessions(): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Retrieve sessions associated with the user.
+        // 3. Return session details securely.
+    };
+
+    // Revokes a specific session.
+    public func revokeSession(_sessionId: Text): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Verify sessionId belongs to the user.
+        // 3. Invalidate the session.
+    };
+
+
+
 }
