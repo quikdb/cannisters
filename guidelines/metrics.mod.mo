@@ -22,4 +22,12 @@ module Dashboard {
         return 0;
     };
 
+    // Allows the user to customize dashboard settings.
+    public func customizeDashboard(_settings: Blob): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Validate settings.
+        // 3. Save settings for the user.
+    };
+
 }

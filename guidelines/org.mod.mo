@@ -43,4 +43,39 @@ module OrganizationManagement {
         // 4. Enforce role-based access control.
     };
 
+        // Edits organization details.
+    public func editOrganization(orgId: Nat, updatedDetails: Blob): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Verify the caller has edit permissions.
+        // 3. Validate updatedDetails.
+        // 4. Update the organization's details.
+    };
+
+    // Deletes an organization.
+    public func deleteOrganization(orgId: Nat): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Verify the caller is the owner.
+        // 3. Remove the organization and associated data.
+        // 4. Handle cascading deletions carefully.
+    };
+
+
+    // Adds a member to the organization.
+    public func addMember(orgId: Nat, userId: Principal, role: Blob): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Verify the caller has permission to add members.
+        // 3. Update the organization's member list.
+    };
+
+    // Removes a member from the organization.
+    public func removeMember(_orgId: Nat, _userId: Principal): async () {
+        // Implementation steps:
+        // 1. Authenticate the caller.
+        // 2. Verify the caller has permission to remove members.
+        // 3. Update the organization's member list.
+    };
+
 }
